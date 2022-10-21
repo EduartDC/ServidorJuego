@@ -1,4 +1,5 @@
-﻿using DataAcces;
+﻿
+using DataBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace MessageService
         public int AddPlayer(Player newPlayer)
         {
             var result = 0;
-            using(var connection = new ModelDB())
+            using (var connection = new DataConnect())
             {
                
                 
@@ -29,8 +30,7 @@ namespace MessageService
         }
         public int ValidatePlayer(Player player)
         {
-            Console.Write("Validar");
-            return 1;
+                return 1;
         }
     }
 }
