@@ -1,4 +1,8 @@
 ﻿
+
+
+
+
 using DataBase;
 using System;
 using System.Collections.Generic;
@@ -15,7 +19,7 @@ namespace MessageService
     {
        
         [OperationContract]
-        int AddPlayer(Player newPlayer);
+        int AddPlayer(Player player);
 
         [OperationContract]
         int ValidatePlayer(Player player);
