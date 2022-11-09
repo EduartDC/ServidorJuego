@@ -22,9 +22,6 @@ namespace MessageService
         [OperationContract(IsOneWay = true)]
         void Whisper(Message msg, Player receiver);
 
-        [OperationContract(IsOneWay = true)]
-        void IsWriting(Player client);
-
         [OperationContract(IsOneWay = true, IsTerminating = true)]
         void Disconnect(Player client);
     }
@@ -39,9 +36,6 @@ namespace MessageService
 
         [OperationContract(IsOneWay = true)]
         void ReceiveWhisper(Message msg, Player receiver);
-
-        [OperationContract(IsOneWay = true)]
-        void IsWritingCallback(Player client);
 
         [OperationContract(IsOneWay = true)]
         void UserJoin(Player client);

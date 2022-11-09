@@ -1,34 +1,26 @@
-﻿
-
-
-
-
-using DataBase;
+﻿using DataBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MessageService
 {
-
     [ServiceContract]
-    interface IUserManager
+    internal interface IMatchService
     {
+        [OperationContract]
+        void StartLobby(List<Player> players, Match newMatch);
 
         [OperationContract]
-        int AddPlayer(Player player);
+        void CreatetMatch(Match newMatch);
 
         [OperationContract]
-        int ValidatePlayer(Player player);
+        void DisconnectFromMatch(Match match);
 
         [OperationContract]
-        int ValidateExistantPlayer(Player player);
-
-        [OperationContract]
-        int UpdatePlayer(Player newPlayer);
-
+        void ConnectToMatch(Match match);
     }
 }

@@ -28,15 +28,74 @@ namespace MessageService
             }
             return result;
         }
+
+        public int UpdatePlayer(Player newPlayer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int ValidateExistantPlayer(Player player)
+        {
+            var result = 0;
+            using (var connection = new DataConnect())
+            {
+                var playerList = (from Player in connection.Players
+                                  where Player.userName.Equals(player.userName) || Player.email.Equals(player.email)
+                                  select Player).FirstOrDefault();
+
+                if (playerList != null)
+                {
+                    result = 1;
+
+                }
+            }
+            return result;
+        }
+
         public int ValidatePlayer(Player player)
         {
-                return 1;
+            var result = 0;
+            using (var connection = new DataConnect())
+            {
+                var playerList = (from Player in connection.Players
+                                  where Player.userName.Equals(player.userName) && Player.password.Equals(player.password)
+                                  select Player).FirstOrDefault();
+
+                if (playerList != null)
+                {
+                    result = 1;
+
+                }
+            }
+            return result;
         }
 
 
     }
 
-    
+    public partial class ManagerService : IMatchService
+    {
+        public void ConnectToMatch(Match match)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CreatetMatch(Match newMatch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DisconnectFromMatch(Match match)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StartLobby(List<Player> players, Match newMatch)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public partial class ManagerService : IChatService
     {
         Dictionary<Player, IChatCallback> clients = new Dictionary<Player, IChatCallback>();
@@ -118,23 +177,13 @@ namespace MessageService
             }
         }
 
-        public void IsWriting(Player client)
-        {
-            lock (syncObj)
-            {
-                foreach (IChatCallback callback in clients.Values)
-                {
-                    callback.IsWritingCallback(client);
-                }
-            }
-        }
-
         public void Say(Message msg)
         {
             lock (syncObj)
             {
                 foreach (IChatCallback callback in clients.Values)
                 {
+            
                     callback.Receive(msg);
                 }
             }
