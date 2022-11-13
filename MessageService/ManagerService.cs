@@ -3,7 +3,10 @@
 using DataBase;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Net.Mail;
+using System.Runtime.Remoting.Contexts;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
@@ -29,9 +32,55 @@ namespace MessageService
             return result;
         }
 
+        public Player SearchPlayer(String userName)
+        {
+            
+            using (var connection = new DataConnect())
+            {
+
+                var players = (from gamer in connection.Players
+                               where gamer.userName.Equals(userName)
+                               select gamer).First();
+                Player player = new Player
+                {
+                    firstName = players.firstName,
+                    lastName = players.lastName,
+                    email = players.email,
+                    userName = players.userName,
+                    password = players.password,
+                    status = players.status,
+                };
+                return player;
+
+            }   
+
+            
+        }
+
         public int UpdatePlayer(Player newPlayer)
         {
-            throw new NotImplementedException();
+            
+            using (var connection = new DataConnect())
+            {
+                var player = connection.Players.Find(newPlayer);
+
+                player.firstName = newPlayer.firstName;
+                player.lastName = newPlayer.lastName;
+                player.userName = newPlayer.userName;
+                player.password = newPlayer.password;
+
+                try
+                {
+                    
+                    return connection.SaveChanges();
+                }
+                catch (DbUpdateException)
+                {
+                    return 0;
+                }
+            }
+
+           
         }
 
         public int ValidateExistantPlayer(Player player)
@@ -91,6 +140,34 @@ namespace MessageService
         }
 
         public void StartLobby(List<Player> players, Match newMatch)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class ManagerService : IGameService
+    {
+        public int addPoints(Player player, int score)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Answer> GetAnswers(Question question)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Question> GetQuestions()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateBoard()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateStrikes()
         {
             throw new NotImplementedException();
         }
