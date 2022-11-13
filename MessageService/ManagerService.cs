@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Net.Mail;
+using System.Runtime.Remoting.Contexts;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
@@ -30,15 +32,29 @@ namespace MessageService
             return result;
         }
 
-        public Player searchPlayer(int idPlayer)
+        public Player SearchPlayer(String userName)
         {
-            Player player = null;
+            
             using (var connection = new DataConnect())
             {
-                player = connection.Players.Find(idPlayer);
-            }
 
-            return player;
+                var players = (from gamer in connection.Players
+                               where gamer.userName.Equals(userName)
+                               select gamer).First();
+                Player player = new Player
+                {
+                    firstName = players.firstName,
+                    lastName = players.lastName,
+                    email = players.email,
+                    userName = players.userName,
+                    password = players.password,
+                    status = players.status,
+                };
+                return player;
+
+            }   
+
+            
         }
 
         public int UpdatePlayer(Player newPlayer)

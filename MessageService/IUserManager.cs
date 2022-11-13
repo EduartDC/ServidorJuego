@@ -31,6 +31,6 @@ namespace MessageService
         int UpdatePlayer(Player newPlayer);
 
         [OperationContract]
-        Player searchPlayer(int idPlayer);
+        Player SearchPlayer(String userName);
     }
 }
