@@ -83,13 +83,13 @@ namespace MessageService
            
         }
 
-        public int ValidateExistantPlayer(Player player)
+        public int ValidateEmailPlayer(Player player)
         {
             var result = 0;
             using (var connection = new DataConnect())
             {
                 var playerList = (from Player in connection.Players
-                                  where Player.userName.Equals(player.userName) || Player.email.Equals(player.email)
+                                  where Player.email.Equals(player.email)
                                   select Player).FirstOrDefault();
 
                 if (playerList != null)
@@ -100,6 +100,8 @@ namespace MessageService
             }
             return result;
         }
+
+       
 
         public int ValidatePlayer(Player player)
         {
@@ -119,7 +121,23 @@ namespace MessageService
             return result;
         }
 
+        public int ValidateUserNamePlayer(Player player)
+        {
+            var result = 0;
+            using (var connection = new DataConnect())
+            {
+                var playerList = (from Player in connection.Players
+                                  where Player.userName.Equals(player.userName)
+                                  select Player).FirstOrDefault();
 
+                if (playerList != null)
+                {
+                    result = 1;
+
+                }
+            }
+            return result;
+        }
     }
 
     public partial class ManagerService : IMatchService
