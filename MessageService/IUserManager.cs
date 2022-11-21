@@ -25,7 +25,10 @@ namespace MessageService
         int ValidatePlayer(Player player);
 
         [OperationContract]
-        int ValidateExistantPlayer(Player player);
+        int ValidateEmailPlayer(Player player);
+
+        [OperationContract]
+        int ValidateUserNamePlayer(Player player);
 
         [OperationContract]
         int UpdatePlayer(Player newPlayer);

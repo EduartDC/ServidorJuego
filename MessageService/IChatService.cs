@@ -10,38 +10,39 @@ using System.Runtime.Serialization;
 
 namespace MessageService
 {
-    [ServiceContract(CallbackContract = typeof(IChatCallback), SessionMode = SessionMode.Required)]
+    [ServiceContract(CallbackContract = typeof(IChatServiceCallback), SessionMode = SessionMode.Required)]
     internal interface IChatService
     {
         [OperationContract(IsInitiating = true)]
-        bool Connect(Player client);
+        void Connect(Player player, int idMatch);
 
         [OperationContract(IsOneWay = true)]
-        void Say(Message msg);
+        void Say(int idMatch, Message msg);
 
         [OperationContract(IsOneWay = true)]
-        void Whisper(Message msg, Player receiver);
+        void Whisper(Message msg, Player player);
 
         [OperationContract(IsOneWay = true, IsTerminating = true)]
-        void Disconnect(Player client);
+        void Disconnect(Player player);
     }
+
     [ServiceContract]
-    public interface IChatCallback
+    public interface IChatServiceCallback
     {
         [OperationContract(IsOneWay = true)]
-        void RefreshClients(List<Player> clients);
+        void RefreshClients(List<Player> players);
 
         [OperationContract(IsOneWay = true)]
-        void Receive(Message msg);
+        void Receive(List<Message> messages);
 
         [OperationContract(IsOneWay = true)]
-        void ReceiveWhisper(Message msg, Player receiver);
+        void ReceiveWhisper(Message msg, Player player);
 
         [OperationContract(IsOneWay = true)]
-        void UserJoin(Player client);
+        void UserJoin(Player player);
 
         [OperationContract(IsOneWay = true)]
-        void UserLeave(Player client);
+        void UserLeave(Player player);
     }
 
     [DataContract]
@@ -49,7 +50,7 @@ namespace MessageService
     {
         private string _sender;
         private string _content;
-        private DateTime _time;
+        
 
         [DataMember]
         public string Sender
@@ -63,12 +64,7 @@ namespace MessageService
             get { return _content; }
             set { _content = value; }
         }
-        [DataMember]
-        public DateTime Time
-        {
-            get { return _time; }
-            set { _time = value; }
-        }
+ 
     }
 
 
