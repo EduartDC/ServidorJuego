@@ -344,48 +344,4 @@ namespace MessageService
             }
         }
     }
-
-    public partial class ManagerService : IChatManager
-    {
-
-        private static readonly Dictionary<string, IChatManagementCallback> chats = new Dictionary<string, IChatManagementCallback>();
-        private static readonly Dictionary<string, List<Message>> messagesByMatch = new Dictionary<string, List<Message>>();
-        public void ConnectToChat(string userName)
-        {
-            chats.Add(userName, OperationContext.Current.GetCallbackChannel<IChatManagementCallback>());
-            SetMessages(userName);
-        }
-
-        public void DisconnectFromChat(string userName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SendMessage(string userName, Message message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetMessages(string userName)
-        {
-            foreach (var player in chats)
-            {
-                string username = player.Key;
-                if (chats.ContainsKey(username))
-                {
-                    chats[username].ReceiveMessages(GetMessages(userName));
-                }
-            }
-        }
-
-        public List<Message> GetMessages(string userName)
-        {
-            if (!messagesByMatch.ContainsKey(userName))
-            {
-                List<Message> messages = new List<Message>();
-                messagesByMatch.Add(userName, messages);
-            }
-            return messagesByMatch[userName];
-        }
-    }
 }
