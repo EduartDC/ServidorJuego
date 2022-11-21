@@ -200,7 +200,7 @@ namespace MessageService
     public partial class ManagerService : IChatService
     {
         Dictionary<Player, IChatServiceCallback> playersCallback = new Dictionary<Player, IChatServiceCallback>();
-        Dictionary<Player, List<Message>> messages = new Dictionary<Player, List<Message>>();
+        Dictionary<int, List<Message>> messages = new Dictionary<int, List<Message>>();
         List<Player> playersInchat = new List<Player>();
 
         public IChatServiceCallback CurrentCallback
@@ -226,7 +226,7 @@ namespace MessageService
             return false;
         }
 
-        public void Connect(Player player)
+        public void Connect(Player player, int idMatch)
         {
 
             if (!playersCallback.ContainsValue(CurrentCallback) && !SearchClientsByName(player.userName))
@@ -235,14 +235,14 @@ namespace MessageService
                 { 
                     playersCallback.Add(player, CurrentCallback);
                     playersInchat.Add(player);
-                    SetMessages(player);
+                    SetMessages(idMatch);
 
                     foreach (Player key in playersCallback.Keys)
                     {
-                        IChatServiceCallback callback = playersCallback[key];
+                        //IChatServiceCallback callback = playersCallback[key];
 
-                        callback.RefreshClients(playersInchat);
-                        callback.UserJoin(player);
+                        OperationContext.Current.GetCallbackChannel<IChatServiceCallback>().RefreshClients(playersInchat);
+                        OperationContext.Current.GetCallbackChannel<IChatServiceCallback>().UserJoin(player);
 
                     }
                 }
@@ -273,32 +273,53 @@ namespace MessageService
             }
         }
 
-        public void Say(Player player,Message msg)
+        public void Say(int idMatch, Message msg)
         {
-            messages[player].Add(msg);
-            SetMessages(player);
+            try
+            {
+                        messages[idMatch].Add(msg);
+                        SetMessages(idMatch);
+                
+            }
+            catch (Exception commProblem)
+            {
+                Console.WriteLine("There was a communication problem. " + commProblem.Message + commProblem.StackTrace);
+                Console.Read();
+            }
+            
         }
 
-        public void SetMessages(Player player)
+        public void SetMessages(int idMatch)
         {
-            foreach (var expectPalyer in playersCallback.Keys)
+            foreach (var expectPalyer in playersInchat)
             {
+                
                 if (playersCallback.ContainsKey(expectPalyer))
                 {
-                    playersCallback[expectPalyer].Receive(GetMessages(player));
+                    try
+                    {
+                        OperationContext.Current.GetCallbackChannel<IChatServiceCallback>().Receive(GetMessages(idMatch));
+                    }
+                    catch (Exception commProblem)
+                    {
+                        Console.WriteLine("There was a communication problem. " + commProblem.Message + commProblem.StackTrace);
+                        Console.Read();
+                    }
+                    
                 }
             }
         }
 
-        public List<Message> GetMessages(Player player)
+        public List<Message> GetMessages(int idMatch)
         {
-            if (!messages.ContainsKey(player))
-            {
-                List<Message> messageList = new List<Message>();
-                messages.Add(player, messageList);
-            }
-            
-            return messages[player];
+
+                if(!messages.ContainsKey(idMatch))
+                {
+                    List<Message> messageList = new List<Message>();
+                    messages.Add(idMatch, messageList);
+                }
+ 
+            return messages[idMatch];
         }
 
         public void Whisper(Message msg, Player receiver)
@@ -324,6 +345,47 @@ namespace MessageService
         }
     }
 
+    public partial class ManagerService : IChatManager
+    {
 
+        private static readonly Dictionary<string, IChatManagementCallback> chats = new Dictionary<string, IChatManagementCallback>();
+        private static readonly Dictionary<string, List<Message>> messagesByMatch = new Dictionary<string, List<Message>>();
+        public void ConnectToChat(string userName)
+        {
+            chats.Add(userName, OperationContext.Current.GetCallbackChannel<IChatManagementCallback>());
+            SetMessages(userName);
+        }
 
+        public void DisconnectFromChat(string userName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SendMessage(string userName, Message message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetMessages(string userName)
+        {
+            foreach (var player in chats)
+            {
+                string username = player.Key;
+                if (chats.ContainsKey(username))
+                {
+                    chats[username].ReceiveMessages(GetMessages(userName));
+                }
+            }
+        }
+
+        public List<Message> GetMessages(string userName)
+        {
+            if (!messagesByMatch.ContainsKey(userName))
+            {
+                List<Message> messages = new List<Message>();
+                messagesByMatch.Add(userName, messages);
+            }
+            return messagesByMatch[userName];
+        }
+    }
 }

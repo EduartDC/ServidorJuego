@@ -14,10 +14,10 @@ namespace MessageService
     internal interface IChatService
     {
         [OperationContract(IsInitiating = true)]
-        void Connect(Player player);
+        void Connect(Player player, int idMatch);
 
         [OperationContract(IsOneWay = true)]
-        void Say(Player player, Message msg);
+        void Say(int idMatch, Message msg);
 
         [OperationContract(IsOneWay = true)]
         void Whisper(Message msg, Player player);
