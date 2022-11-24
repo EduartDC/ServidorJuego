@@ -3,7 +3,8 @@
 
 
 
-using DataBase;
+//using DataBase;
+using DataAcces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,4 +37,6 @@ namespace MessageService
         [OperationContract]
         Player SearchPlayer(String userName);
     }
+
+    
 }

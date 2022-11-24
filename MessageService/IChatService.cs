@@ -5,15 +5,16 @@ using System.ServiceModel.Channels;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
-using DataBase;
+//using DataBase;
 using System.Runtime.Serialization;
+using DataAcces;
 
 namespace MessageService
 {
     [ServiceContract(CallbackContract = typeof(IChatServiceCallback), SessionMode = SessionMode.Required)]
     internal interface IChatService
     {
-        [OperationContract(IsInitiating = true)]
+        [OperationContract(IsOneWay = true)]
         void Connect(Player player, int idMatch);
 
         [OperationContract(IsOneWay = true)]
@@ -22,7 +23,7 @@ namespace MessageService
         [OperationContract(IsOneWay = true)]
         void Whisper(Message msg, Player player);
 
-        [OperationContract(IsOneWay = true, IsTerminating = true)]
+        [OperationContract(IsOneWay = true)]
         void Disconnect(Player player);
     }
 
