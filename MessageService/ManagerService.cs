@@ -1,6 +1,7 @@
 ﻿
 
-using DataBase;
+//using DataBase;
+using DataAcces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
@@ -22,7 +23,7 @@ namespace MessageService
         public int AddPlayer(Player newPlayer)
         {
             var result = 0;
-            using (var connection = new DataConnect())
+            using (var connection = new DataContext())
             {
 
                     connection.Players.Add(newPlayer);
@@ -35,12 +36,12 @@ namespace MessageService
         public Player SearchPlayer(String userName)
         {
             
-            using (var connection = new DataConnect())
+            using (var connection = new DataContext())
             {
 
-                var players = (from gamer in connection.Players
-                               where gamer.userName.Equals(userName)
-                               select gamer).First();
+                var players = (from user in connection.Players
+                               where user.userName.Equals(userName)
+                               select user).First();
                 Player player = new Player
                 {
                     idPlayer = players.idPlayer,
@@ -61,7 +62,7 @@ namespace MessageService
         public int UpdatePlayer(Player newPlayer)
         {
             
-            using (var connection = new DataConnect())
+            using (var connection = new DataContext())
             {
                 var firstName = newPlayer.firstName;
                 var lastName = newPlayer.lastName;
@@ -92,7 +93,7 @@ namespace MessageService
         public int ValidateEmailPlayer(Player player)
         {
             var result = 0;
-            using (var connection = new DataConnect())
+            using (var connection = new DataContext())
             {
                 var playerList = (from Player in connection.Players
                                   where Player.email.Equals(player.email)
@@ -112,7 +113,7 @@ namespace MessageService
         public int ValidatePlayer(Player player)
         {
             var result = 0;
-            using (var connection = new DataConnect())
+            using (var connection = new DataContext())
             {
                 var playerList = (from Player in connection.Players
                                   where Player.userName.Equals(player.userName) && Player.password.Equals(player.password)
@@ -130,7 +131,7 @@ namespace MessageService
         public int ValidateUserNamePlayer(Player player)
         {
             var result = 0;
-            using (var connection = new DataConnect())
+            using (var connection = new DataContext())
             {
                 var playerList = (from Player in connection.Players
                                   where Player.userName.Equals(player.userName)
@@ -236,15 +237,6 @@ namespace MessageService
                     playersCallback.Add(player, CurrentCallback);
                     playersInchat.Add(player);
                     SetMessages(idMatch);
-
-                    foreach (Player key in playersCallback.Keys)
-                    {
-                        //IChatServiceCallback callback = playersCallback[key];
-
-                        OperationContext.Current.GetCallbackChannel<IChatServiceCallback>().RefreshClients(playersInchat);
-                        OperationContext.Current.GetCallbackChannel<IChatServiceCallback>().UserJoin(player);
-
-                    }
                 }
 
             }
