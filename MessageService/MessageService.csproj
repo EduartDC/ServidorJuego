@@ -55,6 +55,12 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\AnswerServer.cs" />
+    <Compile Include="Domain\FriendServer.cs" />
+    <Compile Include="Domain\MatchServer.cs" />
+    <Compile Include="Domain\MessageServer.cs" />
+    <Compile Include="Domain\PlayerServer.cs" />
+    <Compile Include="Domain\QuestionServer.cs" />
     <Compile Include="IChatService.cs" />
     <Compile Include="IGameService.cs" />
     <Compile Include="IMatchService.cs" />
