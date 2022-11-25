@@ -1,7 +1,6 @@
 ﻿
-
-//using DataBase;
 using DataAcces;
+using MessageService.Domain;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
@@ -20,20 +19,45 @@ namespace MessageService
     public partial class ManagerService : IUserManager
     {
 
-        public int AddPlayer(Player newPlayer)
+        public int AddPlayer(PlayerServer newPlayer)
         {
             var result = 0;
             using (var connection = new DataContext())
             {
+                Player player = new Player();
+                player.idPlayer = newPlayer.idPlayer;
+                player.firstName = newPlayer.firstName;
+                player.lastName = newPlayer.lastName;
+                player.email = newPlayer.email;
+                player.userName = newPlayer.userName;
+                player.password = newPlayer.password;
+                player.status = newPlayer.status;
 
-                    connection.Players.Add(newPlayer);
+                    connection.Players.Add(player);
                     result = connection.SaveChanges();
                 
             }
             return result;
         }
 
-        public Player SearchPlayer(String userName)
+        public FriendServer GetFriend(int idFriend)
+        {
+
+            using (var connection = new DataContext())
+            {
+                var friends = connection.Friends.Find(idFriend);
+                FriendServer friend = new FriendServer();
+                friend.idFriend = friends.idFriend;
+                friend.gameFriend = friends.gameFriend;
+                friend.creationDate = friends.creationDate;
+                friend.ownerPlayer = friends.ownerPlayer;
+
+                Console.WriteLine(friends.ownerPlayer);
+                return friend;
+            }
+        }
+
+        public PlayerServer SearchPlayer(String userName)
         {
             
             using (var connection = new DataContext())
@@ -42,7 +66,7 @@ namespace MessageService
                 var players = (from user in connection.Players
                                where user.userName.Equals(userName)
                                select user).First();
-                Player player = new Player
+                PlayerServer player = new PlayerServer
                 {
                     idPlayer = players.idPlayer,
                     firstName = players.firstName,
@@ -59,7 +83,7 @@ namespace MessageService
             
         }
 
-        public int UpdatePlayer(Player newPlayer)
+        public int UpdatePlayer(PlayerServer newPlayer)
         {
             
             using (var connection = new DataContext())
@@ -90,7 +114,7 @@ namespace MessageService
            
         }
 
-        public int ValidateEmailPlayer(Player player)
+        public int ValidateEmailPlayer(PlayerServer player)
         {
             var result = 0;
             using (var connection = new DataContext())
@@ -110,7 +134,7 @@ namespace MessageService
 
        
 
-        public int ValidatePlayer(Player player)
+        public int ValidatePlayer(PlayerServer player)
         {
             var result = 0;
             using (var connection = new DataContext())
@@ -128,7 +152,7 @@ namespace MessageService
             return result;
         }
 
-        public int ValidateUserNamePlayer(Player player)
+        public int ValidateUserNamePlayer(PlayerServer player)
         {
             var result = 0;
             using (var connection = new DataContext())
@@ -149,22 +173,47 @@ namespace MessageService
 
     public partial class ManagerService : IMatchService
     {
-        public void ConnectToMatch(Match match)
+        public void ConnectToMatch(MatchServer match)
         {
             throw new NotImplementedException();
         }
 
-        public void CreatetMatch(Match newMatch)
+        public void CreatetMatch(MatchServer newMatch)
         {
             throw new NotImplementedException();
         }
 
-        public void DisconnectFromMatch(Match match)
+        public void DisconnectFromMatch(MatchServer match)
         {
             throw new NotImplementedException();
         }
 
-        public void StartLobby(List<Player> players, Match newMatch)
+        public AnswerServer GetAnswer(int idAnswer)
+        {
+            using (var connection = new DataContext())
+            {
+                var answers = connection.Answers.Find(idAnswer);
+                AnswerServer answer = new AnswerServer();
+                answer.idAnswer = answers.idAnswer;
+                answer.answer = answers.answer1;
+                answer.place = answers.place;
+                answer.score = answers.score;
+                Console.WriteLine(answers.idAnswer);
+                return answer;
+            }
+        }
+
+        public MatchServer GetMatch(int idMatch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public QuestionServer GetQuestion(int idQuestion)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StartLobby(List<PlayerServer> players, MatchServer newMatch)
         {
             throw new NotImplementedException();
         }
@@ -172,17 +221,17 @@ namespace MessageService
 
     public partial class ManagerService : IGameService
     {
-        public int addPoints(Player player, int score)
+        public int addPoints(PlayerServer player, int score)
         {
             throw new NotImplementedException();
         }
 
-        public List<Answer> GetAnswers(Question question)
+        public List<AnswerServer> GetAnswers(QuestionServer question)
         {
             throw new NotImplementedException();
         }
 
-        public List<Question> GetQuestions()
+        public List<QuestionServer> GetQuestions()
         {
             throw new NotImplementedException();
         }
@@ -200,9 +249,9 @@ namespace MessageService
 
     public partial class ManagerService : IChatService
     {
-        Dictionary<Player, IChatServiceCallback> playersCallback = new Dictionary<Player, IChatServiceCallback>();
-        Dictionary<int, List<Message>> messages = new Dictionary<int, List<Message>>();
-        List<Player> playersInchat = new List<Player>();
+        Dictionary<PlayerServer, IChatServiceCallback> playersCallback = new Dictionary<PlayerServer, IChatServiceCallback>();
+        Dictionary<int, List<MessageServer>> messages = new Dictionary<int, List<MessageServer>>();
+        List<PlayerServer> playersInchat = new List<PlayerServer>();
 
         public IChatServiceCallback CurrentCallback
         {
@@ -217,7 +266,7 @@ namespace MessageService
 
         private bool SearchClientsByName(string name)
         {
-            foreach (Player c in playersCallback.Keys)
+            foreach (PlayerServer c in playersCallback.Keys)
             {
                 if (c.userName == name)
                 {
@@ -227,7 +276,7 @@ namespace MessageService
             return false;
         }
 
-        public void Connect(Player player, int idMatch)
+        public void Connect(PlayerServer player, int idMatch)
         {
 
             if (!playersCallback.ContainsValue(CurrentCallback) && !SearchClientsByName(player.userName))
@@ -243,9 +292,9 @@ namespace MessageService
            
         }
 
-        public void Disconnect(Player player)
+        public void Disconnect(PlayerServer player)
         {
-            foreach (Player c in playersCallback.Keys)
+            foreach (PlayerServer c in playersCallback.Keys)
             {
                 if (player.userName == c.userName)
                 {
@@ -265,7 +314,7 @@ namespace MessageService
             }
         }
 
-        public void Say(int idMatch, Message msg)
+        public void Say(int idMatch, MessageServer msg)
         {
             try
             {
@@ -302,28 +351,28 @@ namespace MessageService
             }
         }
 
-        public List<Message> GetMessages(int idMatch)
+        public List<MessageServer> GetMessages(int idMatch)
         {
 
                 if(!messages.ContainsKey(idMatch))
                 {
-                    List<Message> messageList = new List<Message>();
+                List<MessageServer> messageList = new List<MessageServer>();
                     messages.Add(idMatch, messageList);
                 }
  
             return messages[idMatch];
         }
 
-        public void Whisper(Message msg, Player receiver)
+        public void Whisper(MessageServer msg, PlayerServer receiver)
         {
-            foreach (Player rec in playersCallback.Keys)
+            foreach (PlayerServer rec in playersCallback.Keys)
             {
                 if (rec.userName == receiver.userName)
                 {
                     IChatServiceCallback callback = playersCallback[rec];
                     callback.ReceiveWhisper(msg, rec);
 
-                    foreach (Player sender in playersCallback.Keys)
+                    foreach (PlayerServer sender in playersCallback.Keys)
                     {
                         if (sender.userName == msg.Sender)
                         {
