@@ -1,4 +1,5 @@
-﻿using DataBase;
+﻿
+using MessageService.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,13 @@ namespace MessageService
     {
 
         [OperationContract]
-        List<Question> GetQuestions();
+        List<QuestionServer> GetQuestions();
 
         [OperationContract]
-        List<Answer> GetAnswers(Question question);
+        List<AnswerServer> GetAnswers(QuestionServer question);
 
         [OperationContract]
-        int addPoints(Player player, int score);
+        int addPoints(PlayerServer player, int score);
 
         [OperationContract]
         void UpdateBoard();

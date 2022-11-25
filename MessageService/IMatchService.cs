@@ -1,4 +1,5 @@
-﻿using DataBase;
+﻿
+using MessageService.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +13,24 @@ namespace MessageService
     internal interface IMatchService
     {
         [OperationContract]
-        void StartLobby(List<Player> players, Match newMatch);
+        void StartLobby(List<PlayerServer> players, MatchServer newMatch);
 
         [OperationContract]
-        void CreatetMatch(Match newMatch);
+        void CreatetMatch(MatchServer newMatch);
 
         [OperationContract]
-        void DisconnectFromMatch(Match match);
+        void DisconnectFromMatch(MatchServer match);
 
         [OperationContract]
-        void ConnectToMatch(Match match);
+        void ConnectToMatch(MatchServer match);
+
+        [OperationContract]
+        AnswerServer GetAnswer(int idAnswer);
+
+        [OperationContract]
+        QuestionServer GetQuestion(int idQuestion);
+
+        [OperationContract]
+        MatchServer GetMatch(int idMatch);
     }
 }

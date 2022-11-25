@@ -1,9 +1,5 @@
 ﻿
-
-
-
-
-using DataBase;
+using MessageService.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,21 +15,30 @@ namespace MessageService
     {
 
         [OperationContract]
-        int AddPlayer(Player player);
+        int AddPlayer(PlayerServer player);
 
         [OperationContract]
-        int ValidatePlayer(Player player);
+        int ValidatePlayer(PlayerServer player);
 
         [OperationContract]
-        int ValidateEmailPlayer(Player player);
+        int ValidateEmailPlayer(PlayerServer player);
 
         [OperationContract]
-        int ValidateUserNamePlayer(Player player);
+        int ValidateUserNamePlayer(PlayerServer player);
 
         [OperationContract]
-        int UpdatePlayer(Player newPlayer);
+        int UpdatePlayer(PlayerServer newPlayer);
 
         [OperationContract]
-        Player SearchPlayer(String userName);
+        PlayerServer SearchPlayer(String userName);
+
+        [OperationContract]
+        FriendServer GetFriend(int idFriend);
     }
+
+   
+
+
+
+
 }

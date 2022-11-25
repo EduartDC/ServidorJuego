@@ -5,67 +5,47 @@ using System.ServiceModel.Channels;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
-using DataBase;
 using System.Runtime.Serialization;
+using MessageService.Domain;
 
 namespace MessageService
 {
     [ServiceContract(CallbackContract = typeof(IChatServiceCallback), SessionMode = SessionMode.Required)]
     internal interface IChatService
     {
-        [OperationContract(IsInitiating = true)]
-        void Connect(Player player, int idMatch);
+        [OperationContract(IsOneWay = true)]
+        void Connect(PlayerServer player, int idMatch);
 
         [OperationContract(IsOneWay = true)]
-        void Say(int idMatch, Message msg);
+        void Say(int idMatch, MessageServer msg);
 
         [OperationContract(IsOneWay = true)]
-        void Whisper(Message msg, Player player);
+        void Whisper(MessageServer msg, PlayerServer player);
 
-        [OperationContract(IsOneWay = true, IsTerminating = true)]
-        void Disconnect(Player player);
+        [OperationContract(IsOneWay = true)]
+        void Disconnect(PlayerServer player);
     }
 
     [ServiceContract]
     public interface IChatServiceCallback
     {
         [OperationContract(IsOneWay = true)]
-        void RefreshClients(List<Player> players);
+        void RefreshClients(List<PlayerServer> players);
 
         [OperationContract(IsOneWay = true)]
-        void Receive(List<Message> messages);
+        void Receive(List<MessageServer> messages);
 
         [OperationContract(IsOneWay = true)]
-        void ReceiveWhisper(Message msg, Player player);
+        void ReceiveWhisper(MessageServer msg, PlayerServer player);
 
         [OperationContract(IsOneWay = true)]
-        void UserJoin(Player player);
+        void UserJoin(PlayerServer player);
 
         [OperationContract(IsOneWay = true)]
-        void UserLeave(Player player);
+        void UserLeave(PlayerServer player);
     }
 
-    [DataContract]
-    public class Message
-    {
-        private string _sender;
-        private string _content;
-        
-
-        [DataMember]
-        public string Sender
-        {
-            get { return _sender; }
-            set { _sender = value; }
-        }
-        [DataMember]
-        public string Content
-        {
-            get { return _content; }
-            set { _content = value; }
-        }
- 
-    }
+   
 
 
 }
