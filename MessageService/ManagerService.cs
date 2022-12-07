@@ -19,6 +19,7 @@ namespace MessageService
     public partial class ManagerService : IUserManager
     {
 
+
         public List<PlayerServer> MatchingFriends(int ownerFriendID)
         {
             using (var connection = new DataContext())
@@ -77,6 +78,7 @@ namespace MessageService
             return result;
         }
 
+
         public PlayerServer GetFriend(int idFriend)
         {
             using (var connection = new DataContext())
@@ -96,7 +98,11 @@ namespace MessageService
                     return player;
             }
         }
-
+        /// <summary>
+        /// Metodo empleado para buscar jugadores con base en un userName
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public PlayerServer SearchPlayer(String userName)
         {
             
@@ -127,7 +133,11 @@ namespace MessageService
 
             
         }
-
+        /// <summary>
+        /// Metodo empleado para actualizar los registros de la tabla player en base de datos
+        /// </summary>
+        /// <param name="newPlayer"></param>
+        /// <returns></returns>
         public int UpdatePlayer(PlayerServer newPlayer)
         {
             
@@ -156,7 +166,11 @@ namespace MessageService
                 }
             }           
         }
-
+        /// <summary>
+        /// Metodo utilizado para validar el si ya existe el correo asociado a un jugadro en la base de datos
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
         public int ValidateEmailPlayer(PlayerServer player)
         {
             var result = 0;
@@ -175,7 +189,11 @@ namespace MessageService
             return result;
         }
 
-       
+       /// <summary>
+       /// Metodo para validar disponibilidad de nombre de usuario
+       /// </summary>
+       /// <param name="player"></param>
+       /// <returns></returns>
 
         public int ValidatePlayer(PlayerServer player)
         {
@@ -194,7 +212,11 @@ namespace MessageService
             }
             return result;
         }
-
+        /// <summary>
+        /// Metodo utilizado para realizar la validacion de la existencia de un jugador en la base de datos
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
         public int ValidateUserNamePlayer(PlayerServer player)
         {
             var result = 0;
