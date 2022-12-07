@@ -18,11 +18,45 @@ namespace MessageService
     ConcurrencyMode = ConcurrencyMode.Multiple)]
     public partial class ManagerService : IUserManager
     {
-        /// <summary>
-        /// Metodo utilizado para agregar registros de jugador a la base de datos
-        /// </summary>
-        /// <param name="newPlayer"></param>
-        /// <returns></returns>
+
+
+        public List<PlayerServer> MatchingFriends(int ownerFriendID)
+        {
+            using (var connection = new DataContext())
+            {
+                var friendsFromDataBase = connection.Friends;
+
+                List<PlayerServer> friendsForClient = new List<PlayerServer>();
+
+                foreach (var objectFriendForeach in friendsFromDataBase)
+                {
+                    if (objectFriendForeach.ownerPlayer == ownerFriendID)
+                    {
+                        friendsForClient.Add(GetFriend(objectFriendForeach.gameFriend));
+                    }
+                }
+
+                return friendsForClient;
+            }
+        }
+
+        public int AddFriend(FriendServer newFriend)
+        {
+            var result = 0;
+            using (var connection = new DataContext())
+            {
+                Friend friend = new Friend();
+                friend.idFriend = newFriend.idFriend;
+                friend.gameFriend = newFriend.gameFriend;
+                friend.ownerPlayer = newFriend.ownerPlayer;
+                friend.creationDate = newFriend.creationDate;
+
+                connection.Friends.Add(friend);
+                result = connection.SaveChanges();
+            }
+            return result;
+        }
+
         public int AddPlayer(PlayerServer newPlayer)
         {
             var result = 0;
@@ -43,21 +77,25 @@ namespace MessageService
             }
             return result;
         }
-        
-        public FriendServer GetFriend(int idFriend)
+
+
+        public PlayerServer GetFriend(int idFriend)
         {
-
             using (var connection = new DataContext())
-            {
-                var friends = connection.Friends.Find(idFriend);
-                FriendServer friend = new FriendServer();
-                friend.idFriend = friends.idFriend;
-                friend.gameFriend = friends.gameFriend;
-                friend.creationDate = friends.creationDate;
-                friend.ownerPlayer = friends.ownerPlayer;
+            {                
+                    var friend = (from user in connection.Players
+                                   where user.idPlayer.Equals(idFriend)
+                                   select user).First();
 
-                Console.WriteLine(friends.ownerPlayer);
-                return friend;
+                    PlayerServer player = new PlayerServer
+                    {
+                        idPlayer = friend.idPlayer,
+                        firstName = friend.firstName,
+                        lastName = friend.lastName,
+                        email = friend.email,
+                        userName = friend.userName,
+                    };
+                    return player;
             }
         }
         /// <summary>
@@ -70,22 +108,27 @@ namespace MessageService
             
             using (var connection = new DataContext())
             {
-
-                var players = (from user in connection.Players
-                               where user.userName.Equals(userName)
-                               select user).First();
-                PlayerServer player = new PlayerServer
+                try
                 {
-                    idPlayer = players.idPlayer,
-                    firstName = players.firstName,
-                    lastName = players.lastName,
-                    email = players.email,
-                    userName = players.userName,
-                    password = players.password,
-                    status = players.status,
-                };
-                return player;
-
+                    var players = (from user in connection.Players
+                                   where user.userName.Equals(userName)
+                                   select user).First();
+                    PlayerServer player = new PlayerServer
+                    {
+                        idPlayer = players.idPlayer,
+                        firstName = players.firstName,
+                        lastName = players.lastName,
+                        email = players.email,
+                        userName = players.userName,
+                        password = players.password,
+                        status = players.status,
+                    };
+                    return player;
+                }
+                catch (InvalidOperationException)
+                {
+                    return null;
+                }
             }   
 
             
@@ -121,9 +164,7 @@ namespace MessageService
                 {
                     return 0;
                 }
-            }
-
-           
+            }           
         }
         /// <summary>
         /// Metodo utilizado para validar el si ya existe el correo asociado a un jugadro en la base de datos
@@ -192,7 +233,7 @@ namespace MessageService
                 }
             }
             return result;
-        }
+        }        
     }
 
     public partial class ManagerService : IMatchService
