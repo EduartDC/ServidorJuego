@@ -14,10 +14,13 @@ using System.Text;
 namespace MessageService
 {
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service1" in both code and config file together.
+
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
     ConcurrencyMode = ConcurrencyMode.Multiple)]
+
     public partial class ManagerService : IUserManager
     {
+        List<PlayerServer> usersOnline = new List<PlayerServer>();
 
         public List<PlayerServer> MatchingFriends(int ownerFriendID)
         {
@@ -70,9 +73,9 @@ namespace MessageService
                 player.password = newPlayer.password;
                 player.status = newPlayer.status;
 
-                    connection.Players.Add(player);
-                    result = connection.SaveChanges();
-                
+                connection.Players.Add(player);
+                result = connection.SaveChanges();
+
             }
             return result;
         }
@@ -80,26 +83,26 @@ namespace MessageService
         public PlayerServer GetFriend(int idFriend)
         {
             using (var connection = new DataContext())
-            {                
-                    var friend = (from user in connection.Players
-                                   where user.idPlayer.Equals(idFriend)
-                                   select user).First();
+            {
+                var friend = (from user in connection.Players
+                              where user.idPlayer.Equals(idFriend)
+                              select user).First();
 
-                    PlayerServer player = new PlayerServer
-                    {
-                        idPlayer = friend.idPlayer,
-                        firstName = friend.firstName,
-                        lastName = friend.lastName,
-                        email = friend.email,
-                        userName = friend.userName,
-                    };
-                    return player;
+                PlayerServer player = new PlayerServer
+                {
+                    idPlayer = friend.idPlayer,
+                    firstName = friend.firstName,
+                    lastName = friend.lastName,
+                    email = friend.email,
+                    userName = friend.userName,
+                };
+                return player;
             }
         }
 
         public PlayerServer SearchPlayer(String userName)
         {
-            
+
             using (var connection = new DataContext())
             {
                 try
@@ -123,14 +126,14 @@ namespace MessageService
                 {
                     return null;
                 }
-            }   
+            }
 
-            
+
         }
 
         public int UpdatePlayer(PlayerServer newPlayer)
         {
-            
+
             using (var connection = new DataContext())
             {
                 var firstName = newPlayer.firstName;
@@ -154,7 +157,7 @@ namespace MessageService
                 {
                     return 0;
                 }
-            }           
+            }
         }
 
         public int ValidateEmailPlayer(PlayerServer player)
@@ -175,21 +178,31 @@ namespace MessageService
             return result;
         }
 
-       
 
-        public int ValidatePlayer(PlayerServer player)
+
+        public int UserConnect(PlayerServer dataPlayer)
         {
             var result = 0;
             using (var connection = new DataContext())
             {
-                var playerList = (from Player in connection.Players
-                                  where Player.userName.Equals(player.userName) && Player.password.Equals(player.password)
-                                  select Player).FirstOrDefault();
+                var player = (from Player in connection.Players
+                              where Player.userName.Equals(dataPlayer.userName) && Player.password.Equals(dataPlayer.password)
+                              select Player).FirstOrDefault();
 
-                if (playerList != null)
+
+
+                if (player != null)
                 {
                     result = 1;
-
+                    PlayerServer playerServer = new PlayerServer();
+                    playerServer.idPlayer = player.idPlayer;
+                    playerServer.firstName = player.firstName;
+                    playerServer.lastName = player.lastName;
+                    playerServer.email = player.email;
+                    playerServer.userName = player.userName;
+                    playerServer.password = player.password;
+                    playerServer.userCallBack = OperationContext.Current.GetCallbackChannel<IUserManagerCallBack>();
+                    usersOnline.Add(playerServer);
                 }
             }
             return result;
@@ -211,7 +224,134 @@ namespace MessageService
                 }
             }
             return result;
-        }        
+        }
+    }
+    public partial class ManagerService : IGameService
+    {
+        public int addPoints(PlayerServer player, int score)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<AnswerServer> GetAnswers(QuestionServer question)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<QuestionServer> GetQuestions()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateBoard()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateStrikes()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class ManagerService : IChatService
+    {
+        Dictionary<string, List<PlayerServer>> lobbys = new Dictionary<string, List<PlayerServer>>();
+        List<PlayerServer> playersInLobby = new List<PlayerServer>();
+
+        private bool SearchPlayers(string name)
+        {
+            foreach (PlayerServer player in playersInLobby)
+            {
+                if (player.userName == name)
+                {
+
+                    return true;
+
+                }
+            }
+
+            return false;
+
+        }
+
+        public void Connect(PlayerServer player, string code)
+        {
+            if (!SearchPlayers(player.userName))
+            {
+                player.chatCallback = OperationContext.Current.GetCallbackChannel<IChatServiceCallback>();
+                playersInLobby.Add(player);
+
+                foreach (var players in playersInLobby)
+                {
+                    players.chatCallback.UserJoin(player);
+                    players.chatCallback.RefreshClients(playersInLobby);
+                }
+            }
+        }
+
+        public void Disconnect(PlayerServer player)
+        {
+            var result = false;
+            foreach (var players in playersInLobby)
+            {
+                if (players.userName.Equals(player.userName))
+                {
+                    playersInLobby.Remove(players);
+                    result = true;
+                    break;
+                }
+            }
+            if (result)
+            {
+                foreach (var players in playersInLobby)
+                {
+                    players.chatCallback.UserLeave(player);
+                    players.chatCallback.RefreshClients(playersInLobby);
+                }
+            }
+
+        }
+
+
+        public void Say(int idMatch, MessageServer msg)
+        {
+            foreach (var players in playersInLobby)
+            {
+                players.chatCallback.Receive(msg);
+            }
+
+        }
+
+        public void Whisper(MessageServer msg, string player)
+        {
+            PlayerServer newPlayer = null;
+            foreach (var players in playersInLobby)
+            {
+                if (players.userName.Equals(player))
+                {
+                    newPlayer = players;
+                }
+            }
+            if (newPlayer != null)
+            {
+                newPlayer.chatCallback.ReceiveWhisper(msg);
+            }
+            else
+            {
+                foreach (var playersIn in playersInLobby)
+                {
+                    if (playersIn.userName.Equals(msg.Sender))
+                    {
+                        MessageServer messageServer = new MessageServer();
+                        messageServer.Sender = "Sytem";
+                        messageServer.Content = "User not foud";
+
+                        playersIn.chatCallback.ReceiveWhisper(messageServer);
+                    }
+                }
+            }
+        }
     }
 
     public partial class ManagerService : IMatchService
@@ -256,176 +396,35 @@ namespace MessageService
             throw new NotImplementedException();
         }
 
-        public void StartLobby(List<PlayerServer> players, MatchServer newMatch)
+        public void StartLobby(PlayerServer player, string code)
         {
-            throw new NotImplementedException();
-        }
-    }
-
-    public partial class ManagerService : IGameService
-    {
-        public int addPoints(PlayerServer player, int score)
-        {
-            throw new NotImplementedException();
+            List<PlayerServer> players = new List<PlayerServer>();
+            players.Add(player);
+            lobbys.Add(code, players);
         }
 
-        public List<AnswerServer> GetAnswers(QuestionServer question)
+        public void SendInvitation(PlayerServer friend, string code)
         {
-            throw new NotImplementedException();
-        }
-
-        public List<QuestionServer> GetQuestions()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateBoard()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateStrikes()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public partial class ManagerService : IChatService
-    {
-        Dictionary<PlayerServer, IChatServiceCallback> playersCallback = new Dictionary<PlayerServer, IChatServiceCallback>();
-        Dictionary<int, List<MessageServer>> messages = new Dictionary<int, List<MessageServer>>();
-        List<PlayerServer> playersInchat = new List<PlayerServer>();
-
-        public IChatServiceCallback CurrentCallback
-        {
-            get
+            PlayerServer playerServer = null;
+            foreach (var players in usersOnline)
             {
-                return OperationContext.Current.GetCallbackChannel<IChatServiceCallback>();
-
-            }
-        }
-
-        object syncObj = new object();
-
-        private bool SearchClientsByName(string name)
-        {
-            foreach (PlayerServer c in playersCallback.Keys)
-            {
-                if (c.userName == name)
+                if (players.userName.Equals(friend.userName))
                 {
-                    return true;
+                    playerServer = players;
                 }
             }
-            return false;
-        }
 
-        public void Connect(PlayerServer player, int idMatch)
-        {
-
-            if (!playersCallback.ContainsValue(CurrentCallback) && !SearchClientsByName(player.userName))
-            {   
-                lock (syncObj)
-                { 
-                    playersCallback.Add(player, CurrentCallback);
-                    playersInchat.Add(player);
-                    SetMessages(idMatch);
-                }
-
-            }
-           
-        }
-
-        public void Disconnect(PlayerServer player)
-        {
-            foreach (PlayerServer c in playersCallback.Keys)
+            if (playerServer != null)
             {
-                if (player.userName == c.userName)
-                {
-                    lock (syncObj)
-                    {
-                        this.playersCallback.Remove(c);
-                        this.playersInchat.Remove(c);
-                        foreach (IChatServiceCallback callback in playersCallback.Values)
-                        {
-                            callback.RefreshClients(this.playersInchat);
-                            callback.UserLeave(player);
-                        }
+                playerServer.matchCallBack.ShowInvitation(friend, code);
 
-                        return;
-                    }
-                }
             }
         }
 
-        public void Say(int idMatch, MessageServer msg)
+        public void AddToLobby(PlayerServer friend, string code)
         {
-            try
-            {
-                        messages[idMatch].Add(msg);
-                        SetMessages(idMatch);
-                
-            }
-            catch (Exception commProblem)
-            {
-                Console.WriteLine("There was a communication problem. " + commProblem.Message + commProblem.StackTrace);
-                Console.Read();
-            }
-            
-        }
-
-        public void SetMessages(int idMatch)
-        {
-            foreach (var expectPalyer in playersInchat)
-            {
-                
-                if (playersCallback.ContainsKey(expectPalyer))
-                {
-                    try
-                    {
-                        OperationContext.Current.GetCallbackChannel<IChatServiceCallback>().Receive(GetMessages(idMatch));
-                    }
-                    catch (Exception commProblem)
-                    {
-                        Console.WriteLine("There was a communication problem. " + commProblem.Message + commProblem.StackTrace);
-                        Console.Read();
-                    }
-                    
-                }
-            }
-        }
-
-        public List<MessageServer> GetMessages(int idMatch)
-        {
-
-                if(!messages.ContainsKey(idMatch))
-                {
-                List<MessageServer> messageList = new List<MessageServer>();
-                    messages.Add(idMatch, messageList);
-                }
- 
-            return messages[idMatch];
-        }
-
-        public void Whisper(MessageServer msg, PlayerServer receiver)
-        {
-            foreach (PlayerServer rec in playersCallback.Keys)
-            {
-                if (rec.userName == receiver.userName)
-                {
-                    IChatServiceCallback callback = playersCallback[rec];
-                    callback.ReceiveWhisper(msg, rec);
-
-                    foreach (PlayerServer sender in playersCallback.Keys)
-                    {
-                        if (sender.userName == msg.Sender)
-                        {
-                            IChatServiceCallback senderCallback = playersCallback[sender];
-                            senderCallback.ReceiveWhisper(msg, rec);
-                            return;
-                        }
-                    }
-                }
-            }
+            throw new NotImplementedException();
         }
     }
 }
+

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.ServiceModel;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MessageService.Domain
@@ -32,6 +34,13 @@ namespace MessageService.Domain
         [DataMember]
         public bool status { get; set; }
 
+        [DataMember]
+        public IChatServiceCallback chatCallback { get; set; }
 
+        [DataMember]
+        public IMatchServiceCallBack matchCallBack { get; set; }
+
+        [DataMember]
+        public IUserManagerCallBack userCallBack { get; set; }
     }
 }

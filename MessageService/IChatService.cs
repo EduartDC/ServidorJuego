@@ -14,13 +14,13 @@ namespace MessageService
     internal interface IChatService
     {
         [OperationContract(IsOneWay = true)]
-        void Connect(PlayerServer player, int idMatch);
+        void Connect(PlayerServer player, string code);
 
         [OperationContract(IsOneWay = true)]
         void Say(int idMatch, MessageServer msg);
 
         [OperationContract(IsOneWay = true)]
-        void Whisper(MessageServer msg, PlayerServer player);
+        void Whisper(MessageServer msg, string player);
 
         [OperationContract(IsOneWay = true)]
         void Disconnect(PlayerServer player);
@@ -33,10 +33,10 @@ namespace MessageService
         void RefreshClients(List<PlayerServer> players);
 
         [OperationContract(IsOneWay = true)]
-        void Receive(List<MessageServer> messages);
+        void Receive(MessageServer message);
 
         [OperationContract(IsOneWay = true)]
-        void ReceiveWhisper(MessageServer msg, PlayerServer player);
+        void ReceiveWhisper(MessageServer msg);
 
         [OperationContract(IsOneWay = true)]
         void UserJoin(PlayerServer player);
@@ -45,7 +45,7 @@ namespace MessageService
         void UserLeave(PlayerServer player);
     }
 
-   
+
 
 
 }
