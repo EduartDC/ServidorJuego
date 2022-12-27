@@ -18,7 +18,7 @@ namespace MessageService
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
     ConcurrencyMode = ConcurrencyMode.Multiple)]
 
-    public partial class ManagerService : IUserManager
+    public partial class ManagerService : IUserManager, INotificationService
     {
         List<PlayerServer> usersOnline = new List<PlayerServer>();
 
@@ -119,6 +119,7 @@ namespace MessageService
                         userName = players.userName,
                         password = players.password,
                         status = players.status,
+
                     };
                     return player;
                 }
@@ -127,10 +128,7 @@ namespace MessageService
                     return null;
                 }
             }
-
-
         }
-
         public int UpdatePlayer(PlayerServer newPlayer)
         {
 
@@ -189,8 +187,6 @@ namespace MessageService
                               where Player.userName.Equals(dataPlayer.userName) && Player.password.Equals(dataPlayer.password)
                               select Player).FirstOrDefault();
 
-
-
                 if (player != null)
                 {
                     result = 1;
@@ -201,7 +197,6 @@ namespace MessageService
                     playerServer.email = player.email;
                     playerServer.userName = player.userName;
                     playerServer.password = player.password;
-                    playerServer.userCallBack = OperationContext.Current.GetCallbackChannel<IUserManagerCallBack>();
                     usersOnline.Add(playerServer);
                 }
             }
@@ -225,54 +220,52 @@ namespace MessageService
             }
             return result;
         }
-    }
-    public partial class ManagerService : IGameService
-    {
-        public int addPoints(PlayerServer player, int score)
+
+        public void SetCallBack(string username)
         {
-            throw new NotImplementedException();
+
+            foreach (var players in usersOnline)
+            {
+                if (players.userName.Equals(username))
+                {
+                    players.userCallBack = OperationContext.Current.GetCallbackChannel<INotificationServiceCallback>();
+
+                }
+            }
+
         }
 
-        public List<AnswerServer> GetAnswers(QuestionServer question)
+        public void NotificationUsers(string name, string code)
         {
-            throw new NotImplementedException();
-        }
 
-        public List<QuestionServer> GetQuestions()
-        {
-            throw new NotImplementedException();
-        }
+            PlayerServer newPlayer = new PlayerServer();
+            foreach (var players in usersOnline)
+            {
+                if (players.userName.Equals(name))
+                {
+                    newPlayer = players;
+                }
+            }
 
-        public void UpdateBoard()
-        {
-            throw new NotImplementedException();
-        }
+            newPlayer.userCallBack.notification(name, code);
 
-        public void UpdateStrikes()
-        {
-            throw new NotImplementedException();
         }
     }
 
     public partial class ManagerService : IChatService
     {
-        Dictionary<string, List<PlayerServer>> lobbys = new Dictionary<string, List<PlayerServer>>();
-        List<PlayerServer> playersInLobby = new List<PlayerServer>();
+        List<PlayerServer> playersInChat = new List<PlayerServer>();
 
         private bool SearchPlayers(string name)
         {
-            foreach (PlayerServer player in playersInLobby)
+            foreach (PlayerServer player in playersInChat)
             {
                 if (player.userName == name)
                 {
-
                     return true;
-
                 }
             }
-
             return false;
-
         }
 
         public void Connect(PlayerServer player, string code)
@@ -280,12 +273,13 @@ namespace MessageService
             if (!SearchPlayers(player.userName))
             {
                 player.chatCallback = OperationContext.Current.GetCallbackChannel<IChatServiceCallback>();
-                playersInLobby.Add(player);
 
-                foreach (var players in playersInLobby)
+                playersInChat.Add(player);
+
+                foreach (var players in playersInChat)
                 {
                     players.chatCallback.UserJoin(player);
-                    players.chatCallback.RefreshClients(playersInLobby);
+                    players.chatCallback.RefreshClients(playersInChat);
                 }
             }
         }
@@ -293,21 +287,21 @@ namespace MessageService
         public void Disconnect(PlayerServer player)
         {
             var result = false;
-            foreach (var players in playersInLobby)
+            foreach (var players in playersInChat)
             {
                 if (players.userName.Equals(player.userName))
                 {
-                    playersInLobby.Remove(players);
+                    playersInChat.Remove(players);
                     result = true;
                     break;
                 }
             }
             if (result)
             {
-                foreach (var players in playersInLobby)
+                foreach (var players in playersInChat)
                 {
                     players.chatCallback.UserLeave(player);
-                    players.chatCallback.RefreshClients(playersInLobby);
+                    players.chatCallback.RefreshClients(playersInChat);
                 }
             }
 
@@ -316,9 +310,10 @@ namespace MessageService
 
         public void Say(int idMatch, MessageServer msg)
         {
-            foreach (var players in playersInLobby)
+            foreach (var players in playersInChat)
             {
                 players.chatCallback.Receive(msg);
+
             }
 
         }
@@ -326,7 +321,7 @@ namespace MessageService
         public void Whisper(MessageServer msg, string player)
         {
             PlayerServer newPlayer = null;
-            foreach (var players in playersInLobby)
+            foreach (var players in playersInChat)
             {
                 if (players.userName.Equals(player))
                 {
@@ -339,7 +334,7 @@ namespace MessageService
             }
             else
             {
-                foreach (var playersIn in playersInLobby)
+                foreach (var playersIn in playersInChat)
                 {
                     if (playersIn.userName.Equals(msg.Sender))
                     {
@@ -356,72 +351,129 @@ namespace MessageService
 
     public partial class ManagerService : IMatchService
     {
-        public void ConnectToMatch(MatchServer match)
-        {
-            throw new NotImplementedException();
-        }
+        Dictionary<string, List<PlayerServer>> lobbys = new Dictionary<string, List<PlayerServer>>();
 
         public void CreatetMatch(MatchServer newMatch)
         {
             throw new NotImplementedException();
         }
 
-        public void DisconnectFromMatch(MatchServer match)
+        public void DisconnectFromLobby(PlayerServer player, string code)
         {
-            throw new NotImplementedException();
+            lobbys.Remove(code);
         }
 
-        public AnswerServer GetAnswer(int idAnswer)
+        public void StartLobby(string username, string code)
         {
-            using (var connection = new DataContext())
+            var result = false;
+            foreach (var codeInvitation in lobbys.Keys)
             {
-                var answers = connection.Answers.Find(idAnswer);
-                AnswerServer answer = new AnswerServer();
-                answer.idAnswer = answers.idAnswer;
-                answer.answer = answers.answer1;
-                answer.place = answers.place;
-                answer.score = answers.score;
-                Console.WriteLine(answers.idAnswer);
-                return answer;
+                if (codeInvitation.Equals(code))
+                {
+                    result = true;
+                }
+            }
+
+            if (!result)
+            {
+                PlayerServer playerServer = new PlayerServer();
+                foreach (var player in usersOnline)
+                {
+                    if (player.userName.Equals(username))
+                    {
+
+                        playerServer = player;
+                    }
+                }
+
+                List<PlayerServer> players = new List<PlayerServer>();
+                players.Add(playerServer);
+                lobbys.Add(code, players);
+            }
+            else
+            {
+                List<PlayerServer> playerList = new List<PlayerServer>();
+                foreach (var codeInvitation in lobbys.Keys)
+                {
+                    if (codeInvitation.Equals(code))
+                    {
+
+                        playerList = lobbys[codeInvitation].ToList();
+                    }
+                }
+
+                foreach (var players in playerList)
+                {
+                    players.matchCallBack.UpdateLobby(lobbys[code].ToList());
+                }
+
             }
         }
 
-        public MatchServer GetMatch(int idMatch)
+        public void AddToLobby(string username, string code)
         {
-            throw new NotImplementedException();
-        }
-
-        public QuestionServer GetQuestion(int idQuestion)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void StartLobby(PlayerServer player, string code)
-        {
-            List<PlayerServer> players = new List<PlayerServer>();
-            players.Add(player);
-            lobbys.Add(code, players);
-        }
-
-        public void SendInvitation(PlayerServer friend, string code)
-        {
-            PlayerServer playerServer = null;
+            PlayerServer playerServer = new PlayerServer();
             foreach (var players in usersOnline)
             {
-                if (players.userName.Equals(friend.userName))
+                if (players.userName.Equals(username))
                 {
+
                     playerServer = players;
                 }
             }
 
-            if (playerServer != null)
-            {
-                playerServer.matchCallBack.ShowInvitation(friend, code);
+            lobbys[code].Add(playerServer);
 
+            var list = lobbys[code].ToList();
+
+            playerServer.userCallBack.LoadLobby(list, code);
+
+
+        }
+
+        public void SetCallbackMatch(string username)
+        {
+            foreach (var players in usersOnline)
+            {
+                if (players.userName.Equals(username))
+                {
+                    players.matchCallBack = OperationContext.Current.GetCallbackChannel<IMatchServiceCallBack>();
+
+                }
             }
         }
 
-        public void AddToLobby(PlayerServer friend, string code)
+        public void StartMatch(MatchServer newMatch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DisconnectFromMatch(PlayerServer player)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<QuestionServer> GetQuestions()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<AnswerServer> GetAnswers(QuestionServer question)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int addPoints(PlayerServer player, int score)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateBoard()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateStrikes()
         {
             throw new NotImplementedException();
         }

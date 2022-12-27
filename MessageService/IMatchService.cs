@@ -1,8 +1,10 @@
 ﻿
 using MessageService.Domain;
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,41 +12,52 @@ using System.Threading.Tasks;
 namespace MessageService
 {
 
-    [ServiceContract(CallbackContract = typeof(IMatchServiceCallBack))]
+    [ServiceContract(CallbackContract = typeof(IMatchServiceCallBack), SessionMode = SessionMode.Required)]
     internal interface IMatchService
     {
-        [OperationContract]
-        void StartLobby(PlayerServer player, string code);
-        [OperationContract]
-        void SendInvitation(PlayerServer friend, string code);
-        [OperationContract]
-        void AddToLobby(PlayerServer friend, string code);
+        [OperationContract(IsOneWay = true)]
+        void StartLobby(string username, string code);
+
+        [OperationContract(IsOneWay = true)]
+        void AddToLobby(string username, string code);
+
+        [OperationContract(IsOneWay = true)]
+        void StartMatch(MatchServer newMatch);
+
+        [OperationContract(IsOneWay = true)]
+        void DisconnectFromLobby(PlayerServer player, string code);
+
+        [OperationContract(IsOneWay = true)]
+        void DisconnectFromMatch(PlayerServer player);
+
+        [OperationContract(IsOneWay = true)]
+        void SetCallbackMatch(string username);
 
         [OperationContract]
-        void CreatetMatch(MatchServer newMatch);
+        List<QuestionServer> GetQuestions();
 
         [OperationContract]
-        void DisconnectFromMatch(MatchServer match);
+        List<AnswerServer> GetAnswers(QuestionServer question);
 
         [OperationContract]
-        void ConnectToMatch(MatchServer match);
+        int addPoints(PlayerServer player, int score);
 
         [OperationContract]
-        AnswerServer GetAnswer(int idAnswer);
+        void UpdateBoard();
 
         [OperationContract]
-        QuestionServer GetQuestion(int idQuestion);
+        void UpdateStrikes();
 
-        [OperationContract]
-        MatchServer GetMatch(int idMatch);
     }
 
     [ServiceContract]
     public interface IMatchServiceCallBack
     {
+
         [OperationContract(IsOneWay = true)]
-        void ShowInvitation(PlayerServer friend, string code);
+        void UpdateLobby(List<PlayerServer> plyers);
+
         [OperationContract(IsOneWay = true)]
-        void UpdateLobby(PlayerServer friend, string code);
+        void LoadMatch(MatchServer match);
     }
 }

@@ -41,6 +41,6 @@ namespace MessageService.Domain
         public IMatchServiceCallBack matchCallBack { get; set; }
 
         [DataMember]
-        public IUserManagerCallBack userCallBack { get; set; }
+        public INotificationServiceCallback userCallBack { get; set; }
     }
 }

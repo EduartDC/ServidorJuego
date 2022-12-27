@@ -10,7 +10,7 @@ using System.Text;
 namespace MessageService
 {
 
-    [ServiceContract(CallbackContract = typeof(IUserManagerCallBack))]
+    [ServiceContract]
     interface IUserManager
     {
         [OperationContract]
@@ -39,10 +39,6 @@ namespace MessageService
 
         [OperationContract]
         PlayerServer GetFriend(int idFriend);
-    }
-
-    public interface IUserManagerCallBack
-    {
 
     }
 
