@@ -197,6 +197,7 @@ namespace MessageService
                     playerServer.email = player.email;
                     playerServer.userName = player.userName;
                     playerServer.password = player.password;
+                    playerServer.status = player.status;
                     usersOnline.Add(playerServer);
                 }
             }
@@ -353,14 +354,37 @@ namespace MessageService
     {
         Dictionary<string, List<PlayerServer>> lobbys = new Dictionary<string, List<PlayerServer>>();
 
-        public void CreatetMatch(MatchServer newMatch)
+        public void DisconnectFromLobby(string username, string code)
         {
-            throw new NotImplementedException();
-        }
+            var list = lobbys[code].ToList();
+            if (list.Count == 1)
+            {
+                foreach (var lobby in lobbys.Keys)
+                {
+                    if (lobby.Equals(code))
+                    {
+                        lobbys.Remove(code);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var players in list)
+                {
+                    if (players.userName.Equals(username))
+                    {
+                        list.Remove(players);
+                        break;
+                    }
 
-        public void DisconnectFromLobby(PlayerServer player, string code)
-        {
-            lobbys.Remove(code);
+                }
+
+                foreach (var players in list)
+                {
+                    players.matchCallBack.UpdateLobby(list);
+                }
+            }
+
         }
 
         public void StartLobby(string username, string code)
@@ -389,6 +413,7 @@ namespace MessageService
                 List<PlayerServer> players = new List<PlayerServer>();
                 players.Add(playerServer);
                 lobbys.Add(code, players);
+                playerServer.matchCallBack.UpdateLobby(players);
             }
             else
             {
@@ -443,9 +468,45 @@ namespace MessageService
             }
         }
 
-        public void StartMatch(MatchServer newMatch)
+        public void StartMatch(string code)
         {
-            throw new NotImplementedException();
+
+            MatchServer match = new MatchServer();
+            var list = lobbys[code].ToList();
+            using (var connection = new DataContext())
+            {
+                List<Player> listPlayers = new List<Player>();
+                foreach (var players in list)
+                {
+                    var player = (from user in connection.Players
+                                  where user.userName.Equals(players.userName)
+                                  select user).First();
+
+                    listPlayers.Add(player);
+                }
+
+                Match newMatch = new Match();
+                newMatch.scorePlayerOne = 0;
+                newMatch.scorePlayerTwo = 0;
+                newMatch.playerWinner = 0;
+                newMatch.inviteCode = code;
+                newMatch.Players = (ICollection<Player>)listPlayers;
+
+                match.scorePlayerOne = newMatch.scorePlayerOne;
+                match.scorePlayerTwo = newMatch.scorePlayerTwo;
+                match.playerWinner = newMatch.playerWinner;
+                match.inviteCode = code;
+                match.players = list;
+
+                connection.Matches.Add(newMatch);
+                connection.SaveChanges();
+            }
+
+            foreach (var players in list)
+            {
+                players.matchCallBack.LoadMatch(match);
+            }
+
         }
 
         public void DisconnectFromMatch(PlayerServer player)
@@ -453,19 +514,10 @@ namespace MessageService
             throw new NotImplementedException();
         }
 
-        public List<QuestionServer> GetQuestions()
+        public List<AnswerServer> GetAnswers(int idQuestion)
         {
-            throw new NotImplementedException();
-        }
-
-        public List<AnswerServer> GetAnswers(QuestionServer question)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int addPoints(PlayerServer player, int score)
-        {
-            throw new NotImplementedException();
+            List<AnswerServer> answer = new List<AnswerServer>();
+            return answer;
         }
 
         public void UpdateBoard()
@@ -473,9 +525,28 @@ namespace MessageService
             throw new NotImplementedException();
         }
 
-        public void UpdateStrikes()
+        public QuestionServer GetQuestions()
         {
-            throw new NotImplementedException();
+            QuestionServer questionServer = new QuestionServer();
+            using (var connection = new DataContext())
+            {
+                var question = connection.Questions;
+                var random = new Random();
+
+                var idQuest = random.Next(0, 25);
+                foreach (var quest in question)
+                {
+                    if (quest.idQuestion == idQuest)
+                    {
+                        questionServer.idQuestion = quest.idQuestion;
+                        questionServer.question = quest.question1;
+                        questionServer.questionClass = quest.questionClass;
+
+                    }
+                }
+            }
+
+            return questionServer;
         }
     }
 }

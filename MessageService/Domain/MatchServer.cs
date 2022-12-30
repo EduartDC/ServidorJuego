@@ -21,5 +21,7 @@ namespace MessageService.Domain
         public int playerWinner { get; set; }
         [DataMember]
         public string inviteCode { get; set; }
+        [DataMember]
+        public List<PlayerServer> players { get; set; }
     }
 }

@@ -22,10 +22,10 @@ namespace MessageService
         void AddToLobby(string username, string code);
 
         [OperationContract(IsOneWay = true)]
-        void StartMatch(MatchServer newMatch);
+        void StartMatch(string code);
 
         [OperationContract(IsOneWay = true)]
-        void DisconnectFromLobby(PlayerServer player, string code);
+        void DisconnectFromLobby(string username, string code);
 
         [OperationContract(IsOneWay = true)]
         void DisconnectFromMatch(PlayerServer player);
@@ -34,19 +34,13 @@ namespace MessageService
         void SetCallbackMatch(string username);
 
         [OperationContract]
-        List<QuestionServer> GetQuestions();
+        QuestionServer GetQuestions();
 
         [OperationContract]
-        List<AnswerServer> GetAnswers(QuestionServer question);
-
-        [OperationContract]
-        int addPoints(PlayerServer player, int score);
+        List<AnswerServer> GetAnswers(int idQuestion);
 
         [OperationContract]
         void UpdateBoard();
-
-        [OperationContract]
-        void UpdateStrikes();
 
     }
 
@@ -59,5 +53,11 @@ namespace MessageService
 
         [OperationContract(IsOneWay = true)]
         void LoadMatch(MatchServer match);
+
+        [OperationContract(IsOneWay = true)]
+        void LoadBroad(ManagerService match);
+
+        [OperationContract(IsOneWay = true)]
+        void ExitMatch();
     }
 }
