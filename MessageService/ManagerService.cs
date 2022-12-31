@@ -350,7 +350,7 @@ namespace MessageService
         }
     }
 
-    public partial class ManagerService : IMatchService
+    public partial class ManagerService : IMatchService, IGameService
     {
         Dictionary<string, List<PlayerServer>> lobbys = new Dictionary<string, List<PlayerServer>>();
 
@@ -505,6 +505,7 @@ namespace MessageService
             foreach (var players in list)
             {
                 players.matchCallBack.LoadMatch(match);
+
             }
 
         }
@@ -514,20 +515,10 @@ namespace MessageService
             throw new NotImplementedException();
         }
 
-        public List<AnswerServer> GetAnswers(int idQuestion)
-        {
-            List<AnswerServer> answer = new List<AnswerServer>();
-            return answer;
-        }
-
-        public void UpdateBoard()
-        {
-            throw new NotImplementedException();
-        }
-
-        public QuestionServer GetQuestions()
+        public void StartRaund(string username, string code)
         {
             QuestionServer questionServer = new QuestionServer();
+            List<AnswerServer> answers = new List<AnswerServer>();
             using (var connection = new DataContext())
             {
                 var question = connection.Questions;
@@ -541,12 +532,59 @@ namespace MessageService
                         questionServer.idQuestion = quest.idQuestion;
                         questionServer.question = quest.question1;
                         questionServer.questionClass = quest.questionClass;
+                        foreach (var answer in quest.Answers)
+                        {
+                            AnswerServer newAnswer = new AnswerServer();
+                            newAnswer.idAnswer = answer.idAnswer;
+                            newAnswer.answer = answer.answer1;
+                            newAnswer.place = answer.place;
+                            newAnswer.score = answer.score;
 
+                            answers.Add(newAnswer);
+                        }
+                        questionServer.answers = answers;
+                        break;
                     }
                 }
-            }
 
-            return questionServer;
+            }
+            var list = lobbys[code].ToList();
+            foreach (var players in list)
+            {
+                players.gameCallback.SetRound(questionServer, answers);
+
+            }
+        }
+
+        public void UpdateBoard(MatchServer match, string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetCallbackGame(string username)
+        {
+            foreach (var players in usersOnline)
+            {
+                if (players.userName.Equals(username))
+                {
+                    players.gameCallback = OperationContext.Current.GetCallbackChannel<IGameServiceCallback>();
+
+                }
+            }
+        }
+
+        public void YouTurn(string username, string code)
+        {
+            var list = lobbys[code].ToList();
+            foreach (var players in list)
+            {
+                if (players.userName.Equals(username))
+                {
+                    players.gameCallback.SetTurn();
+                }
+
+
+            }
         }
     }
 }

@@ -33,15 +33,6 @@ namespace MessageService
         [OperationContract(IsOneWay = true)]
         void SetCallbackMatch(string username);
 
-        [OperationContract]
-        QuestionServer GetQuestions();
-
-        [OperationContract]
-        List<AnswerServer> GetAnswers(int idQuestion);
-
-        [OperationContract]
-        void UpdateBoard();
-
     }
 
     [ServiceContract]
@@ -54,10 +45,6 @@ namespace MessageService
         [OperationContract(IsOneWay = true)]
         void LoadMatch(MatchServer match);
 
-        [OperationContract(IsOneWay = true)]
-        void LoadBroad(ManagerService match);
 
-        [OperationContract(IsOneWay = true)]
-        void ExitMatch();
     }
 }

@@ -42,5 +42,8 @@ namespace MessageService.Domain
 
         [DataMember]
         public INotificationServiceCallback userCallBack { get; set; }
+
+        [DataMember]
+        public IGameServiceCallback gameCallback { get; set; }
     }
 }

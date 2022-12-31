@@ -19,5 +19,7 @@ namespace MessageService.Domain
         public string question { get; set; }
         [DataMember]
         public string questionClass { get; set; }
+        [DataMember]
+        public List<AnswerServer> answers { get; set; }
     }
 }
