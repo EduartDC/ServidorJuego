@@ -12,8 +12,6 @@ namespace MessageService
     [ServiceContract(CallbackContract = typeof(IGameServiceCallback), SessionMode = SessionMode.Required)]
     public interface IGameService
     {
-        [OperationContract(IsOneWay = true)]
-        void UpdateBoard(MatchServer match, string username);
 
         [OperationContract(IsOneWay = true)]
         void StartRaund(string username, string code);
@@ -23,6 +21,12 @@ namespace MessageService
 
         [OperationContract(IsOneWay = true)]
         void YouTurn(string username, string code);
+
+        [OperationContract(IsOneWay = true)]
+        void NextRound(MatchServer match, string username);
+
+        [OperationContract(IsOneWay = true)]
+        void SetBoard(MatchServer matchServer, AnswerServer answerServer);
     }
 
     public interface IGameServiceCallback
@@ -30,11 +34,17 @@ namespace MessageService
         [OperationContract(IsOneWay = true)]
         void SetRound(QuestionServer question, List<AnswerServer> answers);
 
-        [OperationContract(IsOneWay = true)]
+        [OperationContract]
         void UpdateMatch(MatchServer match);
 
         [OperationContract(IsOneWay = true)]
-        void SetTurn();
+        void SetTurn(string username);
+
+        [OperationContract(IsOneWay = true)]
+        void EndTurn(string username);
+
+        [OperationContract(IsOneWay = true)]
+        void NewRound(MatchServer match, string username);
 
         [OperationContract(IsOneWay = true)]
         void ExitMatch();

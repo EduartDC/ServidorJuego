@@ -556,10 +556,22 @@ namespace MessageService
             }
         }
 
-        public void UpdateBoard(MatchServer match, string username)
+        /*public void UpdateGamek(MatchServer match, AnswerServer correctAnswer)
         {
-            throw new NotImplementedException();
-        }
+
+            try
+            {
+                var list = match.players;
+                foreach (var player in list)
+                {
+                    player.gameCallback.UpdateMatch(match, correctAnswer);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new FaultException(ex.Message);
+            }
+        }*/
 
         public void SetCallbackGame(string username)
         {
@@ -575,15 +587,53 @@ namespace MessageService
 
         public void YouTurn(string username, string code)
         {
+
             var list = lobbys[code].ToList();
+            var turnOn = new PlayerServer();
+            var turnOff = new PlayerServer();
+
             foreach (var players in list)
             {
                 if (players.userName.Equals(username))
                 {
-                    players.gameCallback.SetTurn();
+                    turnOn = players;
                 }
+                else
+                {
+                    turnOff = players;
+                }
+            }
+
+            turnOn.gameCallback.SetTurn(turnOn.userName);
+            turnOff.gameCallback.EndTurn(turnOff.userName);
 
 
+        }
+
+        public void NextRound(MatchServer match, string username)
+        {
+            var code = match.inviteCode;
+            var list = lobbys[code].ToList();
+
+            foreach (var player in list)
+            {
+                player.gameCallback.NewRound(match, username);
+            }
+        }
+
+        public void SetBoard(MatchServer matchServer, AnswerServer answerServer)
+        {
+            try
+            {
+                var list = lobbys[matchServer.inviteCode].ToList();
+                foreach (var player in list)
+                {
+                    player.gameCallback.UpdateMatch(matchServer);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new FaultException(ex.Message);
             }
         }
     }
