@@ -515,63 +515,44 @@ namespace MessageService
             throw new NotImplementedException();
         }
 
-        public void StartRaund(string username, string code)
+        public void StartRaund(MatchServer match)
         {
             QuestionServer questionServer = new QuestionServer();
             List<AnswerServer> answers = new List<AnswerServer>();
             using (var connection = new DataContext())
             {
-                var question = connection.Questions;
+                var question = connection.Questions.ToList();
                 var random = new Random();
+                var index = random.Next(0, 24);
 
-                var idQuest = random.Next(0, 25);
-                foreach (var quest in question)
+                var questionRandom = question[index];
+
+                questionServer.idQuestion = questionRandom.idQuestion;
+                questionServer.question = questionRandom.question1;
+                questionServer.questionClass = questionRandom.questionClass;
+
+                foreach (var answer in questionRandom.Answers)
                 {
-                    if (quest.idQuestion == idQuest)
-                    {
-                        questionServer.idQuestion = quest.idQuestion;
-                        questionServer.question = quest.question1;
-                        questionServer.questionClass = quest.questionClass;
-                        foreach (var answer in quest.Answers)
-                        {
-                            AnswerServer newAnswer = new AnswerServer();
-                            newAnswer.idAnswer = answer.idAnswer;
-                            newAnswer.answer = answer.answer1;
-                            newAnswer.place = answer.place;
-                            newAnswer.score = answer.score;
+                    AnswerServer newAnswer = new AnswerServer();
+                    newAnswer.idAnswer = answer.idAnswer;
+                    newAnswer.answer = answer.answer1;
+                    newAnswer.place = answer.place;
+                    newAnswer.score = answer.score;
 
-                            answers.Add(newAnswer);
-                        }
-                        questionServer.answers = answers;
-                        break;
-                    }
+                    answers.Add(newAnswer);
                 }
+                questionServer.answers = answers;
+
+
 
             }
-            var list = lobbys[code].ToList();
+            var list = lobbys[match.inviteCode].ToList();
             foreach (var players in list)
             {
-                players.gameCallback.SetRound(questionServer, answers);
+                players.gameCallback.SetRound(questionServer, answers, match);
 
             }
         }
-
-        /*public void UpdateGamek(MatchServer match, AnswerServer correctAnswer)
-        {
-
-            try
-            {
-                var list = match.players;
-                foreach (var player in list)
-                {
-                    player.gameCallback.UpdateMatch(match, correctAnswer);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new FaultException(ex.Message);
-            }
-        }*/
 
         public void SetCallbackGame(string username)
         {
@@ -610,30 +591,56 @@ namespace MessageService
 
         }
 
-        public void NextRound(MatchServer match, string username)
+        public void SetBoard(MatchServer matchServer, AnswerServer answerServer)
         {
-            var code = match.inviteCode;
-            var list = lobbys[code].ToList();
+
+            var list = lobbys[matchServer.inviteCode].ToList();
+            foreach (var player in list)
+            {
+                player.gameCallback.UpdateMatch(matchServer, answerServer);
+            }
+
+        }
+
+        public void EndMatch(MatchServer match)
+        {
+            using (var connection = new DataContext())
+            {
+                try
+                {
+                    var newMatch = (from quest in connection.Matches
+                                    where quest.inviteCode.Equals(match.inviteCode)
+                                    select quest).First();
+
+                    newMatch.scorePlayerOne = match.scorePlayerOne;
+                    newMatch.scorePlayerTwo = match.scorePlayerTwo;
+                    newMatch.playerWinner = match.playerWinner;
+
+                    connection.SaveChanges();
+                }
+                catch (DbUpdateException)
+                {
+                    throw new EndpointNotFoundException();
+                }
+
+            }
+
+            var list = lobbys[match.inviteCode].ToList();
 
             foreach (var player in list)
             {
-                player.gameCallback.NewRound(match, username);
+                player.gameCallback.ExitMatch(match);
             }
+
+            lobbys.Remove(match.inviteCode);
         }
 
-        public void SetBoard(MatchServer matchServer, AnswerServer answerServer)
+        public void AddStrikes(int strikesOne, int strikesTwo, string code)
         {
-            try
+            var list = lobbys[code].ToList();
+            foreach (var player in list)
             {
-                var list = lobbys[matchServer.inviteCode].ToList();
-                foreach (var player in list)
-                {
-                    player.gameCallback.UpdateMatch(matchServer);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new FaultException(ex.Message);
+                player.gameCallback.SetStrikes(strikesOne, strikesTwo);
             }
         }
     }
