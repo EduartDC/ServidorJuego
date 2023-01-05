@@ -423,7 +423,7 @@ namespace MessageService
     {
         List<PlayerServer> playersInChat = new List<PlayerServer>();
 
-        private bool SearchPlayers(string name)
+        public bool SearchPlayers(string name)
         {
             foreach (PlayerServer player in playersInChat)
             {
