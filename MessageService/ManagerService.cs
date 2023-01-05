@@ -22,6 +22,8 @@ namespace MessageService
     public partial class ManagerService : IUserManager, INotificationService
     {
         List<PlayerServer> usersOnline = new List<PlayerServer>();
+        int errorConnection = 404;
+
         public bool VerifyConnection()
         {
 
@@ -103,7 +105,7 @@ namespace MessageService
                 }
                 else
                 {
-                    return 404;
+                    return errorConnection;
                 }
 
             }
@@ -113,14 +115,24 @@ namespace MessageService
         public int AddPlayer(PlayerServer newPlayer)
         {
             var result = 0;
+            var validate = false;
             using (var connection = new DataContext())
             {
                 if (VerifyConnection())
                 {
-                    var validatePlayer = (from user in connection.Players
-                                          where user.userName.Equals(newPlayer.userName)
-                                          select user).First();
-                    if (validatePlayer != null)
+                    var validatePlayers = new List<Player>();
+
+                    validatePlayers = connection.Players.ToList();
+
+                    foreach (var player in validatePlayers)
+                    {
+                        if (player.userName.Equals(newPlayer.userName))
+                        {
+                            validate = true;
+                        }
+                    }
+
+                    if (!validate)
                     {
                         Player player = new Player();
                         player.idPlayer = newPlayer.idPlayer;
@@ -133,20 +145,16 @@ namespace MessageService
 
                         connection.Players.Add(player);
                         result = connection.SaveChanges();
-                        return result;
-                    }
-                    else
-                    {
-                        return 0;
+
                     }
 
                 }
                 else
                 {
-                    return 404;
+                    result = errorConnection;
                 }
 
-
+                return result;
             }
 
         }
@@ -187,7 +195,7 @@ namespace MessageService
                 }
                 else
                 {
-                    return 404;
+                    return errorConnection;
                 }
 
             }
@@ -253,7 +261,7 @@ namespace MessageService
                 }
                 else
                 {
-                    return 404;
+                    return errorConnection;
                 }
 
             }
@@ -279,7 +287,7 @@ namespace MessageService
                 }
                 else
                 {
-                    return 404;
+                    return errorConnection;
                 }
 
             }
@@ -355,7 +363,7 @@ namespace MessageService
                 }
                 else
                 {
-                    return 404;
+                    return errorConnection;
                 }
 
 
