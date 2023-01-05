@@ -11,7 +11,7 @@ namespace TestUnitApp
         
 
         [TestMethod]
-        public void MatchingFriends()
+        public void MatchingFriendsSuccess()
         {
             ManagerService objectManagerService = new ManagerService();
 
@@ -21,7 +21,17 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void AddFriend()
+        public void MatchingFriendsFailed()
+        {
+            ManagerService objectManagerService = new ManagerService();
+
+            var obtainedResult = objectManagerService.MatchingFriends("Pedrito");
+
+            Assert.IsNull(obtainedResult);
+        }
+
+        [TestMethod]
+        public void AddFriendSuccess()
         {
             FriendServer friend = new FriendServer();
             friend.gameFriend = 1;
@@ -35,7 +45,21 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void AddPlayer()
+        public void AddFriendFailed()
+        {
+            FriendServer friend = new FriendServer();
+            friend.gameFriend = 80;
+            friend.ownerPlayer = 80;
+            friend.creationDate = System.DateTime.Now;
+
+            ManagerService objectManagerService = new ManagerService();
+            int obtainedResult = objectManagerService.AddFriend(friend);
+
+            Assert.Equals(0, obtainedResult);
+        }
+
+        [TestMethod]
+        public void AddPlayerSuccess()
         {
             PlayerServer playerServer = new PlayerServer();
             playerServer.idPlayer = 1;
@@ -53,7 +77,25 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void DeleteFriend()
+        public void AddPlayerFailed()
+        {
+            PlayerServer playerServer = new PlayerServer();
+            playerServer.idPlayer = 1;
+            playerServer.firstName = "Pedrito";
+            playerServer.lastName = "Sola";
+            playerServer.email = "peso@gmail.com";
+            playerServer.userName = "PedritoGamer";
+            playerServer.password = "8d4544d4sdcad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
+            playerServer.status = true;
+
+            ManagerService objectManagerService = new ManagerService();
+            int obtainedResult = objectManagerService.AddPlayer(playerServer);
+
+            Assert.Equals(0, obtainedResult);
+        }
+
+        [TestMethod]
+        public void DeleteFriendSuccess()
         {
             PlayerServer playerServer = new PlayerServer();
             playerServer.idPlayer = 1;
@@ -65,7 +107,19 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void SearchPlayer()
+        public void DeleteFriendFailed()
+        {
+            PlayerServer playerServer = new PlayerServer();
+            playerServer.idPlayer = 1;
+
+            ManagerService objectManagerService = new ManagerService();
+            int obtainedResult = objectManagerService.DeleteFriend(playerServer, "Pedrito");
+
+            Assert.AreEqual(0, obtainedResult);
+        }
+
+        [TestMethod]
+        public void SearchPlayerSuccess()
         {
             ManagerService objectManagerService = new ManagerService();
             var obtainedResult = objectManagerService.SearchPlayer(username);
@@ -74,7 +128,16 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void UpdatePlayer()
+        public void SearchPlayerFailed()
+        {
+            ManagerService objectManagerService = new ManagerService();
+            var obtainedResult = objectManagerService.SearchPlayer("Pedrito");
+
+            Assert.IsNull(obtainedResult);
+        }
+
+        [TestMethod]
+        public void UpdatePlayerSuccess()
         {
             PlayerServer playerServer = new PlayerServer();
             playerServer.firstName = "Cristopher";
@@ -89,7 +152,22 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void ValidateEmailPlayer()
+        public void UpdatePlayerFailed()
+        {
+            PlayerServer playerServer = new PlayerServer();
+            playerServer.firstName = "Cristopher";
+            playerServer.lastName = "Rodríguez Salamanca";
+            playerServer.userName = "PedritoGamer";
+            playerServer.password = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
+
+            ManagerService objectManagerService = new ManagerService();
+            int obtainedResult = objectManagerService.UpdatePlayer(playerServer);
+
+            Assert.Equals(0, obtainedResult);
+        }
+
+        [TestMethod]
+        public void ValidateEmailPlayerSuccess()
         {
             PlayerServer playerServer = new PlayerServer();
             playerServer.email = "cris@gmail.com";
@@ -101,7 +179,19 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void UserConnect()
+        public void ValidateEmailPlayerFailed()
+        {
+            PlayerServer playerServer = new PlayerServer();
+            playerServer.email = "crisoforogamer@gmail.com";
+
+            ManagerService objectManagerService = new ManagerService();
+            int obtainedResult = objectManagerService.ValidateEmailPlayer(playerServer);
+
+            Assert.Equals(0, obtainedResult);
+        }
+
+        [TestMethod]
+        public void UserConnectSuccess()
         {
             PlayerServer playerServer = new PlayerServer();
             playerServer.userName = username;
@@ -114,7 +204,20 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void ValidateUserNamePlayer()
+        public void UserConnectFailed()
+        {
+            PlayerServer playerServer = new PlayerServer();
+            playerServer.userName = "Pedrito";
+            playerServer.password = "8d969eef64a7q8c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
+
+            ManagerService objectManagerService = new ManagerService();
+            var obtainedResult = objectManagerService.UserConnect(playerServer);
+
+            Assert.IsNull(obtainedResult);
+        }
+
+        [TestMethod]
+        public void ValidateUserNamePlayerSuccess()
         {
             PlayerServer playerServer = new PlayerServer();
             playerServer.userName = username;
@@ -123,6 +226,18 @@ namespace TestUnitApp
             int obtainedResult = objectManagerService.ValidateUserNamePlayer(playerServer);
 
             Assert.Equals(1, obtainedResult);
+        }
+
+        [TestMethod]
+        public void ValidateUserNamePlayerFailed()
+        {
+            PlayerServer playerServer = new PlayerServer();
+            playerServer.userName = "PedritoGamer";
+
+            ManagerService objectManagerService = new ManagerService();
+            int obtainedResult = objectManagerService.ValidateUserNamePlayer(playerServer);
+
+            Assert.Equals(0, obtainedResult);
         }
 
     }
