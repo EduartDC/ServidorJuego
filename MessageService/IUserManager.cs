@@ -14,7 +14,7 @@ namespace MessageService
     interface IUserManager
     {
         [OperationContract]
-        List<PlayerServer> MatchingFriends(int ownerFriend);
+        List<PlayerServer> MatchingFriends(string username);
 
         [OperationContract]
         int AddFriend(FriendServer newFriend);
@@ -23,7 +23,7 @@ namespace MessageService
         int AddPlayer(PlayerServer player);
 
         [OperationContract]
-        int UserConnect(PlayerServer player);
+        PlayerServer UserConnect(PlayerServer player);
 
         [OperationContract]
         int ValidateEmailPlayer(PlayerServer player);
@@ -38,7 +38,7 @@ namespace MessageService
         PlayerServer SearchPlayer(String userName);
 
         [OperationContract]
-        PlayerServer GetFriend(int idFriend);
+        int DeleteFriend(PlayerServer friend, string username);
 
     }
 

@@ -35,6 +35,9 @@ namespace MessageService.Domain
         public bool status { get; set; }
 
         [DataMember]
+        public List<FriendServer> friends { get; set; }
+
+        [DataMember]
         public IChatServiceCallback chatCallback { get; set; }
 
         [DataMember]

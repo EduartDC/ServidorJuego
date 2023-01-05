@@ -4,6 +4,7 @@ using MessageService.Domain;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Mail;
 using System.Runtime.Remoting.Contexts;
@@ -21,24 +22,56 @@ namespace MessageService
     public partial class ManagerService : IUserManager, INotificationService
     {
         List<PlayerServer> usersOnline = new List<PlayerServer>();
+        public bool VerifyConnection()
+        {
 
-        public List<PlayerServer> MatchingFriends(int ownerFriendID)
+            var connection = new DataContext();
+            try
+            {
+                connection.Database.Connection.Open();
+                connection.Database.Connection.Close();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+        public List<PlayerServer> MatchingFriends(string username)
         {
             using (var connection = new DataContext())
             {
-                var friendsFromDataBase = connection.Friends;
-
-                List<PlayerServer> friendsForClient = new List<PlayerServer>();
-
-                foreach (var objectFriendForeach in friendsFromDataBase)
+                if (VerifyConnection())
                 {
-                    if (objectFriendForeach.ownerPlayer == ownerFriendID)
+                    var player = (from user in connection.Players
+                                  where user.userName.Equals(username)
+                                  select user).First();
+                    var listFriends = (from user in connection.Friends
+                                       where user.ownerPlayer.Equals(player.idPlayer)
+                                       select user).ToList();
+                    var friends = new List<PlayerServer>();
+                    foreach (var c in listFriends)
                     {
-                        friendsForClient.Add(GetFriend(objectFriendForeach.gameFriend));
+                        foreach (var b in usersOnline)
+                        {
+                            if (c.gameFriend.Equals(b.idPlayer))
+                            {
+                                friends.Add(b);
+                            }
+                        }
+
                     }
+
+                    return friends;
+                }
+                else
+                {
+                    return null;
                 }
 
-                return friendsForClient;
+
             }
         }
 
@@ -47,16 +80,34 @@ namespace MessageService
             var result = 0;
             using (var connection = new DataContext())
             {
-                Friend friend = new Friend();
-                friend.idFriend = newFriend.idFriend;
-                friend.gameFriend = newFriend.gameFriend;
-                friend.ownerPlayer = newFriend.ownerPlayer;
-                friend.creationDate = newFriend.creationDate;
+                if (VerifyConnection())
+                {
+                    Friend friend = new Friend();
 
-                connection.Friends.Add(friend);
-                result = connection.SaveChanges();
+                    friend.gameFriend = newFriend.gameFriend;
+                    friend.ownerPlayer = newFriend.ownerPlayer;
+                    friend.creationDate = newFriend.creationDate;
+
+                    connection.Friends.Add(friend);
+                    result = connection.SaveChanges();
+
+                    Friend friends = new Friend();
+
+                    friends.gameFriend = newFriend.ownerPlayer;
+                    friends.ownerPlayer = newFriend.gameFriend;
+                    friend.creationDate = newFriend.creationDate;
+
+                    connection.Friends.Add(friends);
+                    result = connection.SaveChanges();
+                    return result;
+                }
+                else
+                {
+                    return 404;
+                }
+
             }
-            return result;
+
         }
 
         public int AddPlayer(PlayerServer newPlayer)
@@ -64,39 +115,81 @@ namespace MessageService
             var result = 0;
             using (var connection = new DataContext())
             {
-                Player player = new Player();
-                player.idPlayer = newPlayer.idPlayer;
-                player.firstName = newPlayer.firstName;
-                player.lastName = newPlayer.lastName;
-                player.email = newPlayer.email;
-                player.userName = newPlayer.userName;
-                player.password = newPlayer.password;
-                player.status = newPlayer.status;
+                if (VerifyConnection())
+                {
+                    var validatePlayer = (from user in connection.Players
+                                          where user.userName.Equals(newPlayer.userName)
+                                          select user).First();
+                    if (validatePlayer != null)
+                    {
+                        Player player = new Player();
+                        player.idPlayer = newPlayer.idPlayer;
+                        player.firstName = newPlayer.firstName;
+                        player.lastName = newPlayer.lastName;
+                        player.email = newPlayer.email;
+                        player.userName = newPlayer.userName;
+                        player.password = newPlayer.password;
+                        player.status = newPlayer.status;
 
-                connection.Players.Add(player);
-                result = connection.SaveChanges();
+                        connection.Players.Add(player);
+                        result = connection.SaveChanges();
+                        return result;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+
+                }
+                else
+                {
+                    return 404;
+                }
+
 
             }
-            return result;
+
         }
 
-        public PlayerServer GetFriend(int idFriend)
+        public int DeleteFriend(PlayerServer friend, string username)
         {
             using (var connection = new DataContext())
             {
-                var friend = (from user in connection.Players
-                              where user.idPlayer.Equals(idFriend)
-                              select user).First();
-
-                PlayerServer player = new PlayerServer
+                if (VerifyConnection())
                 {
-                    idPlayer = friend.idPlayer,
-                    firstName = friend.firstName,
-                    lastName = friend.lastName,
-                    email = friend.email,
-                    userName = friend.userName,
-                };
-                return player;
+                    var result = 0;
+                    PlayerServer player = new PlayerServer();
+                    foreach (var players in usersOnline)
+                    {
+                        if (players.userName.Equals(username))
+                        {
+                            player = players;
+                            break;
+                        }
+                    }
+
+                    var friendsDB = (from user in connection.Friends
+                                     where user.ownerPlayer.Equals(player.idPlayer)
+                                     select user).ToList();
+
+                    foreach (var friends in friendsDB)
+                    {
+                        if (friends.gameFriend.Equals(friend.idPlayer))
+                        {
+                            connection.Friends.Remove(friends);
+                            result = connection.SaveChanges();
+
+                            break;
+                        }
+
+                    }
+                    return result;
+                }
+                else
+                {
+                    return 404;
+                }
+
             }
         }
 
@@ -105,7 +198,7 @@ namespace MessageService
 
             using (var connection = new DataContext())
             {
-                try
+                if (VerifyConnection())
                 {
                     var players = (from user in connection.Players
                                    where user.userName.Equals(userName)
@@ -123,7 +216,7 @@ namespace MessageService
                     };
                     return player;
                 }
-                catch (InvalidOperationException)
+                else
                 {
                     return null;
                 }
@@ -134,27 +227,35 @@ namespace MessageService
 
             using (var connection = new DataContext())
             {
-                var firstName = newPlayer.firstName;
-                var lastName = newPlayer.lastName;
-                var userName = newPlayer.userName;
-                var password = newPlayer.password;
-                try
+                if (VerifyConnection())
                 {
-                    var player = connection.Players.Find(newPlayer.idPlayer);
+                    var firstName = newPlayer.firstName;
+                    var lastName = newPlayer.lastName;
+                    var userName = newPlayer.userName;
+                    var password = newPlayer.password;
+                    try
+                    {
+                        var player = connection.Players.Find(newPlayer.idPlayer);
 
-                    player.firstName = firstName;
-                    player.lastName = lastName;
-                    player.userName = userName;
-                    player.password = password;
+                        player.firstName = firstName;
+                        player.lastName = lastName;
+                        player.userName = userName;
+                        player.password = password;
 
-                    var result = connection.SaveChanges();
+                        var result = connection.SaveChanges();
 
-                    return result;
+                        return result;
+                    }
+                    catch (DbUpdateException)
+                    {
+                        return 0;
+                    }
                 }
-                catch (DbUpdateException)
+                else
                 {
-                    return 0;
+                    return 404;
                 }
+
             }
         }
 
@@ -163,45 +264,75 @@ namespace MessageService
             var result = 0;
             using (var connection = new DataContext())
             {
-                var playerList = (from Player in connection.Players
-                                  where Player.email.Equals(player.email)
-                                  select Player).FirstOrDefault();
-
-                if (playerList != null)
+                if (VerifyConnection())
                 {
-                    result = 1;
+                    var playerList = (from Player in connection.Players
+                                      where Player.email.Equals(player.email)
+                                      select Player).FirstOrDefault();
 
+                    if (playerList != null)
+                    {
+                        result = 1;
+
+                    }
+                    return result;
                 }
+                else
+                {
+                    return 404;
+                }
+
             }
-            return result;
+
         }
 
-
-
-        public int UserConnect(PlayerServer dataPlayer)
+        public PlayerServer UserConnect(PlayerServer dataPlayer)
         {
-            var result = 0;
+
+            PlayerServer playerServer = new PlayerServer();
             using (var connection = new DataContext())
             {
-                var player = (from Player in connection.Players
+                if (VerifyConnection())
+                {
+
+                    var player = new Player(); ;
+
+                    player = (from Player in connection.Players
                               where Player.userName.Equals(dataPlayer.userName) && Player.password.Equals(dataPlayer.password)
                               select Player).FirstOrDefault();
 
-                if (player != null)
+                    if (player != null)
+                    {
+
+                        playerServer.idPlayer = player.idPlayer;
+                        playerServer.firstName = player.firstName;
+                        playerServer.lastName = player.lastName;
+                        playerServer.email = player.email;
+                        playerServer.userName = player.userName;
+                        playerServer.password = player.password;
+                        playerServer.status = player.status;
+                        var list = new List<FriendServer>();
+                        foreach (var friend in player.Friends)
+                        {
+                            var friendServer = new FriendServer();
+                            friendServer.idFriend = friend.idFriend;
+                            friendServer.gameFriend = friend.gameFriend;
+                            friendServer.ownerPlayer = friend.ownerPlayer;
+                            friendServer.creationDate = friend.creationDate;
+                            list.Add(friendServer);
+                        }
+                        playerServer.friends = list;
+                        usersOnline.Add(playerServer);
+                    }
+                    return playerServer;
+                }
+                else
                 {
-                    result = 1;
-                    PlayerServer playerServer = new PlayerServer();
-                    playerServer.idPlayer = player.idPlayer;
-                    playerServer.firstName = player.firstName;
-                    playerServer.lastName = player.lastName;
-                    playerServer.email = player.email;
-                    playerServer.userName = player.userName;
-                    playerServer.password = player.password;
-                    playerServer.status = player.status;
-                    usersOnline.Add(playerServer);
+
+                    return null;
                 }
             }
-            return result;
+
         }
 
         public int ValidateUserNamePlayer(PlayerServer player)
@@ -209,17 +340,27 @@ namespace MessageService
             var result = 0;
             using (var connection = new DataContext())
             {
-                var playerList = (from Player in connection.Players
-                                  where Player.userName.Equals(player.userName)
-                                  select Player).FirstOrDefault();
-
-                if (playerList != null)
+                if (VerifyConnection())
                 {
-                    result = 1;
+                    var playerList = (from Player in connection.Players
+                                      where Player.userName.Equals(player.userName)
+                                      select Player).FirstOrDefault();
 
+                    if (playerList != null)
+                    {
+                        result = 1;
+
+                    }
+                    return result;
                 }
+                else
+                {
+                    return 404;
+                }
+
+
             }
-            return result;
+
         }
 
         public void SetCallBack(string username)
@@ -475,39 +616,45 @@ namespace MessageService
             var list = lobbys[code].ToList();
             using (var connection = new DataContext())
             {
-                List<Player> listPlayers = new List<Player>();
-                foreach (var players in list)
+                if (VerifyConnection())
                 {
-                    var player = (from user in connection.Players
-                                  where user.userName.Equals(players.userName)
-                                  select user).First();
+                    List<Player> listPlayers = new List<Player>();
+                    foreach (var players in list)
+                    {
+                        var player = (from user in connection.Players
+                                      where user.userName.Equals(players.userName)
+                                      select user).First();
 
-                    listPlayers.Add(player);
+                        listPlayers.Add(player);
+                    }
+
+                    Match newMatch = new Match();
+                    newMatch.scorePlayerOne = 0;
+                    newMatch.scorePlayerTwo = 0;
+                    newMatch.playerWinner = 0;
+                    newMatch.inviteCode = code;
+                    newMatch.Players = (ICollection<Player>)listPlayers;
+
+                    match.scorePlayerOne = newMatch.scorePlayerOne;
+                    match.scorePlayerTwo = newMatch.scorePlayerTwo;
+                    match.playerWinner = newMatch.playerWinner;
+                    match.inviteCode = code;
+                    match.players = list;
+
+                    connection.Matches.Add(newMatch);
+                    connection.SaveChanges();
+
+                    foreach (var players in list)
+                    {
+                        players.matchCallBack.LoadMatch(match);
+
+                    }
                 }
-
-                Match newMatch = new Match();
-                newMatch.scorePlayerOne = 0;
-                newMatch.scorePlayerTwo = 0;
-                newMatch.playerWinner = 0;
-                newMatch.inviteCode = code;
-                newMatch.Players = (ICollection<Player>)listPlayers;
-
-                match.scorePlayerOne = newMatch.scorePlayerOne;
-                match.scorePlayerTwo = newMatch.scorePlayerTwo;
-                match.playerWinner = newMatch.playerWinner;
-                match.inviteCode = code;
-                match.players = list;
-
-                connection.Matches.Add(newMatch);
-                connection.SaveChanges();
+                else
+                {
+                    throw new CommunicationObjectFaultedException();
+                }
             }
-
-            foreach (var players in list)
-            {
-                players.matchCallBack.LoadMatch(match);
-
-            }
-
         }
 
         public void DisconnectFromMatch(PlayerServer player)
@@ -521,37 +668,43 @@ namespace MessageService
             List<AnswerServer> answers = new List<AnswerServer>();
             using (var connection = new DataContext())
             {
-                var question = connection.Questions.ToList();
-                var random = new Random();
-                var index = random.Next(0, 24);
-
-                var questionRandom = question[index];
-
-                questionServer.idQuestion = questionRandom.idQuestion;
-                questionServer.question = questionRandom.question1;
-                questionServer.questionClass = questionRandom.questionClass;
-
-                foreach (var answer in questionRandom.Answers)
+                if (VerifyConnection())
                 {
-                    AnswerServer newAnswer = new AnswerServer();
-                    newAnswer.idAnswer = answer.idAnswer;
-                    newAnswer.answer = answer.answer1;
-                    newAnswer.place = answer.place;
-                    newAnswer.score = answer.score;
+                    var question = connection.Questions.ToList();
+                    var random = new Random();
+                    var index = random.Next(0, 24);
 
-                    answers.Add(newAnswer);
+                    var questionRandom = question[index];
+
+                    questionServer.idQuestion = questionRandom.idQuestion;
+                    questionServer.question = questionRandom.question1;
+                    questionServer.questionClass = questionRandom.questionClass;
+
+                    foreach (var answer in questionRandom.Answers)
+                    {
+                        AnswerServer newAnswer = new AnswerServer();
+                        newAnswer.idAnswer = answer.idAnswer;
+                        newAnswer.answer = answer.answer1;
+                        newAnswer.place = answer.place;
+                        newAnswer.score = answer.score;
+
+                        answers.Add(newAnswer);
+                    }
+                    questionServer.answers = answers;
+
+                    var list = lobbys[match.inviteCode].ToList();
+                    foreach (var players in list)
+                    {
+                        players.gameCallback.SetRound(questionServer, answers, match);
+
+                    }
                 }
-                questionServer.answers = answers;
-
-
-
+                else
+                {
+                    throw new CommunicationObjectFaultedException();
+                }
             }
-            var list = lobbys[match.inviteCode].ToList();
-            foreach (var players in list)
-            {
-                players.gameCallback.SetRound(questionServer, answers, match);
 
-            }
         }
 
         public void SetCallbackGame(string username)
@@ -606,7 +759,7 @@ namespace MessageService
         {
             using (var connection = new DataContext())
             {
-                try
+                if (VerifyConnection())
                 {
                     var newMatch = (from quest in connection.Matches
                                     where quest.inviteCode.Equals(match.inviteCode)
@@ -618,7 +771,7 @@ namespace MessageService
 
                     connection.SaveChanges();
                 }
-                catch (DbUpdateException)
+                else
                 {
                     throw new EndpointNotFoundException();
                 }
