@@ -392,6 +392,31 @@ namespace MessageService
             newPlayer.userCallBack.notification(name, code);
 
         }
+
+        public void UserDisconect(string username)
+        {
+            foreach (var player in usersOnline)
+            {
+                if (player.userName.Equals(username))
+                {
+                    usersOnline.Remove(player);
+                }
+
+            }
+        }
+
+        public int ValidateLobby(string code)
+        {
+            var result = 0;
+            foreach (var lobby in lobbys.Keys)
+            {
+                if (lobby.Equals(code))
+                {
+                    result = 1;
+                }
+            }
+            return result;
+        }
     }
 
     public partial class ManagerService : IChatService
@@ -574,6 +599,20 @@ namespace MessageService
                 }
 
             }
+            if (username.Equals("Guest"))
+            {
+                foreach (var player in usersOnline)
+                {
+                    if (player.userName.Equals(username))
+                    {
+                        lobbys[code].Add(player);
+                    }
+                }
+                foreach (var players in lobbys[code].ToList())
+                {
+                    players.matchCallBack.UpdateLobby(lobbys[code].ToList());
+                }
+            }
         }
 
         public void AddToLobby(string username, string code)
@@ -655,11 +694,6 @@ namespace MessageService
                     throw new CommunicationObjectFaultedException();
                 }
             }
-        }
-
-        public void DisconnectFromMatch(PlayerServer player)
-        {
-            throw new NotImplementedException();
         }
 
         public void StartRaund(MatchServer match)
@@ -795,6 +829,25 @@ namespace MessageService
             {
                 player.gameCallback.SetStrikes(strikesOne, strikesTwo);
             }
+        }
+
+        public void KickFromLobby(string username, string code)
+        {
+            var list = lobbys[code].ToList();
+            if (list.Count >= 2)
+            {
+                foreach (var player in list)
+                {
+                    if (!player.userName.Equals(username))
+                    {
+                        lobbys[code].Remove(player);
+                        player.matchCallBack.Kicked();
+                    }
+
+                }
+
+            }
+
         }
     }
 }

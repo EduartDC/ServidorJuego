@@ -28,7 +28,7 @@ namespace MessageService
         void DisconnectFromLobby(string username, string code);
 
         [OperationContract(IsOneWay = true)]
-        void DisconnectFromMatch(PlayerServer player);
+        void KickFromLobby(string username, string code);
 
         [OperationContract(IsOneWay = true)]
         void SetCallbackMatch(string username);
@@ -44,6 +44,9 @@ namespace MessageService
 
         [OperationContract(IsOneWay = true)]
         void LoadMatch(MatchServer match);
+
+        [OperationContract(IsOneWay = true)]
+        void Kicked();
 
 
     }

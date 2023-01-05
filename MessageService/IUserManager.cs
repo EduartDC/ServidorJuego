@@ -40,6 +40,12 @@ namespace MessageService
         [OperationContract]
         int DeleteFriend(PlayerServer friend, string username);
 
+        [OperationContract]
+        void UserDisconect(string username);
+
+        [OperationContract]
+        int ValidateLobby(string code);
+
     }
 
 
