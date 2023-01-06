@@ -11,7 +11,7 @@ namespace TestUnitApp
         readonly string username = "Cris";
 
         [TestMethod]
-        public void SearchPlayers()
+        public void SearchPlayersSuccess()
         {
             ManagerService objectManagerService = new ManagerService();
 
@@ -19,5 +19,16 @@ namespace TestUnitApp
 
             Assert.IsTrue(obtainedResult);
         }
+
+        [TestMethod]
+        public void SearchPlayersFailed()
+        {
+            ManagerService objectManagerService = new ManagerService();
+
+            var obtainedResult = objectManagerService.SearchPlayers("Pedrito");
+
+            Assert.IsFalse(obtainedResult);
+        }
+
     }
 }
