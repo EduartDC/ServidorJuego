@@ -329,10 +329,7 @@ namespace MessageService
                         playerServer.friends = list;
                         usersOnline.Add(playerServer);
                     }
-                    else
-                    {
-                        playerServer = null;
-                    }
+
 
                 }
                 else
