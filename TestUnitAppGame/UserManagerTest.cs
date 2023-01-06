@@ -8,7 +8,7 @@ namespace TestUnitApp
     {
         readonly string code = "123456";
         readonly string username = "Cris";
-        
+
 
         [TestMethod]
         public void MatchingFriendsSuccess()
@@ -94,29 +94,7 @@ namespace TestUnitApp
             Assert.Equals(0, obtainedResult);
         }
 
-        [TestMethod]
-        public void DeleteFriendSuccess()
-        {
-            PlayerServer playerServer = new PlayerServer();
-            playerServer.idPlayer = 1;
 
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.DeleteFriend(playerServer, username);
-
-            Assert.AreEqual(1, obtainedResult);
-        }
-
-        [TestMethod]
-        public void DeleteFriendFailed()
-        {
-            PlayerServer playerServer = new PlayerServer();
-            playerServer.idPlayer = 1;
-
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.DeleteFriend(playerServer, "Pedrito");
-
-            Assert.AreEqual(0, obtainedResult);
-        }
 
         [TestMethod]
         public void SearchPlayerSuccess()

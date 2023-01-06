@@ -1,9 +1,0 @@
-﻿C:\Users\Eduar\Desktop\New folder\MessageService\TestUnitAppGame\ChatServiceTest.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\TestUnitAppGame\MatchServiceTest.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\TestUnitAppGame\Properties\AssemblyInfo.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\TestUnitAppGame\UserManagerTest.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\packages\MSTest.TestAdapter.2.2.7\build\_common\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
-C:\Users\Eduar\Desktop\New folder\MessageService\packages\MSTest.TestAdapter.2.2.7\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
-C:\Users\Eduar\Desktop\New folder\MessageService\packages\MSTest.TestAdapter.2.2.7\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
-C:\Users\Eduar\Desktop\New folder\MessageService\packages\MSTest.TestAdapter.2.2.7\build\net45\Microsoft.TestPlatform.AdapterUtilities.dll
-C:\Users\Eduar\Desktop\New folder\MessageService\TestUnitAppGame\packages.config

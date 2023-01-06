@@ -111,7 +111,7 @@ namespace MessageService
 
         }
 
-        public int AddPlayer(PlayerServer newPlayer)
+        public int AddPlayer(PlayerServer player)
         {
             var result = 0;
             var validate = false;
@@ -123,9 +123,9 @@ namespace MessageService
 
                     validatePlayers = connection.Players.ToList();
 
-                    foreach (var player in validatePlayers)
+                    foreach (var players in validatePlayers)
                     {
-                        if (player.userName.Equals(newPlayer.userName))
+                        if (player.userName.Equals(player.userName))
                         {
                             validate = true;
                         }
@@ -133,16 +133,16 @@ namespace MessageService
 
                     if (!validate)
                     {
-                        Player player = new Player();
-                        player.idPlayer = newPlayer.idPlayer;
-                        player.firstName = newPlayer.firstName;
-                        player.lastName = newPlayer.lastName;
-                        player.email = newPlayer.email;
-                        player.userName = newPlayer.userName;
-                        player.password = newPlayer.password;
-                        player.status = newPlayer.status;
+                        Player newplayer = new Player();
+                        newplayer.idPlayer = player.idPlayer;
+                        newplayer.firstName = player.firstName;
+                        newplayer.lastName = player.lastName;
+                        newplayer.email = player.email;
+                        newplayer.userName = player.userName;
+                        newplayer.password = player.password;
+                        newplayer.status = player.status;
 
-                        connection.Players.Add(player);
+                        connection.Players.Add(newplayer);
                         result = connection.SaveChanges();
 
                     }
@@ -212,7 +212,8 @@ namespace MessageService
                     var players = (from user in connection.Players
                                    where user.userName.Equals(userName)
                                    select user).FirstOrDefault();
-                    if (player.Equals(null))
+
+                    if (players.userName != null)
                     {
                         player.idPlayer = players.idPlayer;
                         player.firstName = players.firstName;
@@ -290,7 +291,7 @@ namespace MessageService
 
         }
 
-        public PlayerServer UserConnect(PlayerServer dataPlayer)
+        public PlayerServer UserConnect(PlayerServer player)
         {
 
             PlayerServer playerServer = new PlayerServer();
@@ -299,24 +300,24 @@ namespace MessageService
                 if (VerifyConnection())
                 {
 
-                    var player = new Player(); ;
+                    var newPlayer = new Player();
 
-                    player = (from Player in connection.Players
-                              where Player.userName.Equals(dataPlayer.userName) && Player.password.Equals(dataPlayer.password)
-                              select Player).FirstOrDefault();
+                    newPlayer = (from user in connection.Players
+                                 where user.userName.Equals(player.userName) && user.password.Equals(player.password)
+                                 select user).FirstOrDefault();
 
                     if (player != null)
                     {
 
-                        playerServer.idPlayer = player.idPlayer;
-                        playerServer.firstName = player.firstName;
-                        playerServer.lastName = player.lastName;
-                        playerServer.email = player.email;
-                        playerServer.userName = player.userName;
-                        playerServer.password = player.password;
-                        playerServer.status = player.status;
+                        playerServer.idPlayer = newPlayer.idPlayer;
+                        playerServer.firstName = newPlayer.firstName;
+                        playerServer.lastName = newPlayer.lastName;
+                        playerServer.email = newPlayer.email;
+                        playerServer.userName = newPlayer.userName;
+                        playerServer.password = newPlayer.password;
+                        playerServer.status = newPlayer.status;
                         var list = new List<FriendServer>();
-                        foreach (var friend in player.Friends)
+                        foreach (var friend in newPlayer.Friends)
                         {
                             var friendServer = new FriendServer();
                             friendServer.idFriend = friend.idFriend;
@@ -382,7 +383,6 @@ namespace MessageService
 
                 }
             }
-
         }
 
         public void NotificationUsers(string name, string code)
@@ -411,6 +411,7 @@ namespace MessageService
                     break;
                 }
 
+
             }
         }
 
@@ -423,8 +424,41 @@ namespace MessageService
                 {
                     result = 1;
                 }
+
             }
+
             return result;
+        }
+
+        public PlayerServer GuestUser()
+        {
+            using (var connection = new DataContext())
+            {
+                PlayerServer player = new PlayerServer();
+                if (VerifyConnection())
+                {
+                    var players = (from user in connection.Players
+                                   where user.userName.Equals("Guest")
+                                   select user).FirstOrDefault();
+
+                    player.idPlayer = players.idPlayer;
+                    player.firstName = players.firstName;
+                    player.lastName = players.lastName;
+                    player.email = players.email;
+                    player.userName = players.userName;
+                    player.password = players.password;
+                    player.status = players.status;
+
+                    usersOnline.Add(player);
+
+                }
+                else
+                {
+                    player = null;
+                }
+                return player;
+            }
+
         }
     }
 
@@ -432,7 +466,7 @@ namespace MessageService
     {
         List<PlayerServer> playersInChat = new List<PlayerServer>();
 
-        public bool SearchPlayers(string name)
+        public bool SearchPlayersInChat(string name)
         {
             var result = false;
             if (playersInChat.Count != 0)
@@ -457,7 +491,7 @@ namespace MessageService
         {
             if (player != null)
             {
-                if (!SearchPlayers(player.userName))
+                if (!SearchPlayersInChat(player.userName))
                 {
                     player.chatCallback = OperationContext.Current.GetCallbackChannel<IChatServiceCallback>();
 
@@ -485,6 +519,7 @@ namespace MessageService
                     break;
                 }
             }
+
             if (result)
             {
                 foreach (var players in playersInChat)
@@ -496,18 +531,17 @@ namespace MessageService
 
         }
 
-
-        public void Say(int idMatch, MessageServer msg)
+        public void Say(MessageServer message)
         {
             foreach (var players in playersInChat)
             {
-                players.chatCallback.Receive(msg);
+                players.chatCallback.Receive(message);
 
             }
 
         }
 
-        public void Whisper(MessageServer msg, string player)
+        public void Whisper(MessageServer message, string player)
         {
             PlayerServer newPlayer = null;
             foreach (var players in playersInChat)
@@ -516,22 +550,22 @@ namespace MessageService
                 {
                     newPlayer = players;
                 }
-            }
-            if (newPlayer != null)
-            {
-                newPlayer.chatCallback.ReceiveWhisper(msg);
-            }
-            else
-            {
-                foreach (var playersIn in playersInChat)
-                {
-                    if (playersIn.userName.Equals(msg.Sender))
-                    {
-                        MessageServer messageServer = new MessageServer();
-                        messageServer.Sender = "Sytem";
-                        messageServer.Content = "User not foud";
 
-                        playersIn.chatCallback.ReceiveWhisper(messageServer);
+                if (newPlayer != null)
+                {
+                    newPlayer.chatCallback.ReceiveWhisper(message);
+                }
+                else
+                {
+                    foreach (var playersIn in playersInChat)
+                    {
+                        if (playersIn.userName.Equals(message.Sender))
+                        {
+                            MessageServer messageServer = new MessageServer();
+                            messageServer.Sender = "Sytem";
+                            messageServer.Content = "User not foud";
+                            playersIn.chatCallback.ReceiveWhisper(messageServer);
+                        }
                     }
                 }
             }

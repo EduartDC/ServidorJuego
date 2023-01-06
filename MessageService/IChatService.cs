@@ -17,10 +17,10 @@ namespace MessageService
         void Connect(PlayerServer player, string code);
 
         [OperationContract(IsOneWay = true)]
-        void Say(int idMatch, MessageServer msg);
+        void Say(MessageServer message);
 
         [OperationContract(IsOneWay = true)]
-        void Whisper(MessageServer msg, string player);
+        void Whisper(MessageServer message, string player);
 
         [OperationContract(IsOneWay = true)]
         void Disconnect(PlayerServer player);
@@ -36,7 +36,7 @@ namespace MessageService
         void Receive(MessageServer message);
 
         [OperationContract(IsOneWay = true)]
-        void ReceiveWhisper(MessageServer msg);
+        void ReceiveWhisper(MessageServer message);
 
         [OperationContract(IsOneWay = true)]
         void UserJoin(PlayerServer player);

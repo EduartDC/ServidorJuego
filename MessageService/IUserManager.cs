@@ -46,6 +46,8 @@ namespace MessageService
         [OperationContract]
         int ValidateLobby(string code);
 
+        [OperationContract]
+        PlayerServer GuestUser();
     }
 
 

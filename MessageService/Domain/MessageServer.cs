@@ -11,21 +11,21 @@ namespace MessageService.Domain
     public class MessageServer
     {
 
-        private string _sender;
-        private string _content;
+        private string sender;
+        private string content;
 
 
         [DataMember]
         public string Sender
         {
-            get { return _sender; }
-            set { _sender = value; }
+            get { return sender; }
+            set { sender = value; }
         }
         [DataMember]
         public string Content
         {
-            get { return _content; }
-            set { _content = value; }
+            get { return content; }
+            set { content = value; }
         }
     }
 }
