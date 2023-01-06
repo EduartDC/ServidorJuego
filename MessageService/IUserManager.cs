@@ -38,7 +38,7 @@ namespace MessageService
         PlayerServer SearchPlayer(String userName);
 
         [OperationContract]
-        int DeleteFriend(PlayerServer friend, string username);
+        int DeleteFriend(int idPlayer, string username);
 
         [OperationContract]
         void UserDisconect(string username);

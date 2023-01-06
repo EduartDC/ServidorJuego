@@ -23,7 +23,7 @@ namespace MessageService
     {
 
         [OperationContract(IsOneWay = true)]
-        void notification(string username, string code);
+        void Notification(string username, string code);
 
         [OperationContract(IsOneWay = true)]
         void LoadLobby(List<PlayerServer> players, string code);
