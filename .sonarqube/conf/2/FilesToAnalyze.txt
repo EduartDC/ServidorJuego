@@ -1,0 +1,4 @@
+﻿C:\Users\Eduar\Desktop\New folder\MessageService\Host\Program.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\Host\Properties\AssemblyInfo.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\Host\App.config
+C:\Users\Eduar\Desktop\New folder\MessageService\Host\packages.config

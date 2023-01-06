@@ -1,0 +1,10 @@
+﻿C:\Users\Eduar\Desktop\New folder\MessageService\DataBase\Answer.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\DataBase\Class1.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\DataBase\DataConnect.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\DataBase\Friend.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\DataBase\Match.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\DataBase\Player.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\DataBase\Properties\AssemblyInfo.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\DataBase\Question.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\DataBase\App.config
+C:\Users\Eduar\Desktop\New folder\MessageService\DataBase\packages.config

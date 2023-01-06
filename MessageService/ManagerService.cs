@@ -84,22 +84,20 @@ namespace MessageService
             {
                 if (VerifyConnection())
                 {
-                    Friend friend = new Friend();
+                    Friend friendGame = new Friend();
 
-                    friend.gameFriend = newFriend.gameFriend;
-                    friend.ownerPlayer = newFriend.ownerPlayer;
-                    friend.creationDate = newFriend.creationDate;
-
-                    connection.Friends.Add(friend);
+                    friendGame.gameFriend = newFriend.gameFriend;
+                    friendGame.ownerPlayer = newFriend.ownerPlayer;
+                    friendGame.creationDate = newFriend.creationDate;
+                    connection.Friends.Add(friendGame);
                     result = connection.SaveChanges();
 
-                    Friend friends = new Friend();
+                    Friend friendsOwner = new Friend();
+                    friendsOwner.gameFriend = newFriend.ownerPlayer;
+                    friendsOwner.ownerPlayer = newFriend.gameFriend;
+                    friendsOwner.creationDate = newFriend.creationDate;
 
-                    friends.gameFriend = newFriend.ownerPlayer;
-                    friends.ownerPlayer = newFriend.gameFriend;
-                    friend.creationDate = newFriend.creationDate;
-
-                    connection.Friends.Add(friends);
+                    connection.Friends.Add(friendsOwner);
                     result = connection.SaveChanges();
                     return result;
                 }
