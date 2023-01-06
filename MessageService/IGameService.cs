@@ -32,6 +32,7 @@ namespace MessageService
         void AddStrikes(int strikesOne, int strikesTwo, string code);
     }
 
+    [ServiceContract]
     public interface IGameServiceCallback
     {
         [OperationContract(IsOneWay = true)]

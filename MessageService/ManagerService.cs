@@ -306,7 +306,7 @@ namespace MessageService
                                  where user.userName.Equals(player.userName) && user.password.Equals(player.password)
                                  select user).FirstOrDefault();
 
-                    if (player != null)
+                    if (newPlayer != null)
                     {
 
                         playerServer.idPlayer = newPlayer.idPlayer;
@@ -441,15 +441,19 @@ namespace MessageService
                                    where user.userName.Equals("Guest")
                                    select user).FirstOrDefault();
 
-                    player.idPlayer = players.idPlayer;
-                    player.firstName = players.firstName;
-                    player.lastName = players.lastName;
-                    player.email = players.email;
-                    player.userName = players.userName;
-                    player.password = players.password;
-                    player.status = players.status;
+                    if (players != null)
+                    {
+                        player.idPlayer = players.idPlayer;
+                        player.firstName = players.firstName;
+                        player.lastName = players.lastName;
+                        player.email = players.email;
+                        player.userName = players.userName;
+                        player.password = players.password;
+                        player.status = players.status;
 
-                    usersOnline.Add(player);
+                        usersOnline.Add(player);
+                    }
+
 
                 }
                 else
@@ -489,20 +493,20 @@ namespace MessageService
 
         public void Connect(PlayerServer player, string code)
         {
-            if (player != null)
+            if (player != null && !SearchPlayersInChat(player.userName))
             {
-                if (!SearchPlayersInChat(player.userName))
+
+
+                player.chatCallback = OperationContext.Current.GetCallbackChannel<IChatServiceCallback>();
+
+                playersInChat.Add(player);
+
+                foreach (var players in playersInChat)
                 {
-                    player.chatCallback = OperationContext.Current.GetCallbackChannel<IChatServiceCallback>();
-
-                    playersInChat.Add(player);
-
-                    foreach (var players in playersInChat)
-                    {
-                        players.chatCallback.UserJoin(player);
-                        players.chatCallback.RefreshClients(playersInChat);
-                    }
+                    players.chatCallback.UserJoin(player);
+                    players.chatCallback.RefreshClients(playersInChat);
                 }
+
             }
 
         }
