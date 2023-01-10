@@ -7,10 +7,28 @@ namespace TestUnitApp
     [TestClass]
     public class ChatServiceTest
     {
-        readonly string code = "123456";
-        readonly string username = "Cris";
+        String username = "Cris";
 
+        [TestMethod]
+        public void TestSearchPlayersInChatWithoutUsers()
+        {
 
+            ManagerService objectManagerService = new ManagerService();
+
+            var obtainedResult = objectManagerService.SearchPlayersInChat(username);
+
+            Assert.IsTrue(obtainedResult);
+        }
+
+        [TestMethod]
+        public void TestSearchPlayersInChatFailed()
+        {
+            ManagerService objectManagerService = new ManagerService();
+
+            var obtainedResult = objectManagerService.SearchPlayersInChat("Pedrito");
+
+            Assert.IsFalse(obtainedResult);
+        }
 
     }
 }

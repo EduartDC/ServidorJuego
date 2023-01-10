@@ -1,15 +1,15 @@
-﻿C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\Domain\AnswerServer.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\Domain\FriendServer.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\Domain\MatchServer.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\Domain\MessageServer.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\Domain\PlayerServer.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\Domain\QuestionServer.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\IChatService.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\IGameService.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\IMatchService.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\INotificationService.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\IUserManager.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\Properties\AssemblyInfo.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\ManagerService.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\App.config
-C:\Users\Eduar\Desktop\New folder\MessageService\MessageService\packages.config
+﻿C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\Domain\AnswerServer.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\Domain\FriendServer.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\Domain\MatchServer.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\Domain\MessageServer.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\Domain\PlayerServer.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\Domain\QuestionServer.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\IChatService.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\IGameService.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\IMatchService.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\INotificationService.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\IUserManager.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\Properties\AssemblyInfo.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\ManagerService.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\App.config
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\MessageService\packages.config

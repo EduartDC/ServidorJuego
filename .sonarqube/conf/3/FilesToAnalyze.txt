@@ -1,9 +1,15 @@
-﻿C:\Users\Eduar\Desktop\New folder\MessageService\TestUnitAppGame\ChatServiceTest.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\TestUnitAppGame\MatchServiceTest.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\TestUnitAppGame\Properties\AssemblyInfo.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\TestUnitAppGame\UserManagerTest.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\packages\MSTest.TestAdapter.2.2.7\build\_common\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
-C:\Users\Eduar\Desktop\New folder\MessageService\packages\MSTest.TestAdapter.2.2.7\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
-C:\Users\Eduar\Desktop\New folder\MessageService\packages\MSTest.TestAdapter.2.2.7\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
-C:\Users\Eduar\Desktop\New folder\MessageService\packages\MSTest.TestAdapter.2.2.7\build\net45\Microsoft.TestPlatform.AdapterUtilities.dll
-C:\Users\Eduar\Desktop\New folder\MessageService\TestUnitAppGame\packages.config
+﻿C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\TestUnitAppGame\ChatServiceTest.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\TestUnitAppGame\MatchServiceTest.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\TestUnitAppGame\Properties\AssemblyInfo.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\TestUnitAppGame\UserManagerTest.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\packages\MSTest.TestAdapter.2.2.7\build\_common\es\Microsoft.TestPlatform.AdapterUtilities.resources.dll
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\packages\MSTest.TestAdapter.2.2.7\build\_common\es\Microsoft.TestPlatform.CoreUtilities.resources.dll
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\packages\MSTest.TestAdapter.2.2.7\build\_common\es\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\packages\MSTest.TestAdapter.2.2.7\build\_common\es\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\packages\MSTest.TestAdapter.2.2.7\build\_common\es\Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\packages\MSTest.TestAdapter.2.2.7\build\_common\es\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\packages\MSTest.TestAdapter.2.2.7\build\_common\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\packages\MSTest.TestAdapter.2.2.7\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\packages\MSTest.TestAdapter.2.2.7\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\packages\MSTest.TestAdapter.2.2.7\build\net45\Microsoft.TestPlatform.AdapterUtilities.dll
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\TestUnitAppGame\packages.config

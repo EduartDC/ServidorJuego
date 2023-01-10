@@ -1,221 +1,237 @@
 ﻿using MessageService;
 using MessageService.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System;
+using DataAcces;
 
 namespace TestUnitApp
 {
-    internal class UserManagerTest
+    [TestClass]
+    public class UserManagerTest
     {
-        readonly string code = "123456";
-        readonly string username = "Cris";
+        private PlayerServer objectPlayer { get; set; }
+        private FriendServer objectFriend { get; set; }
+        private ManagerService objectManagerService { get; set; }
+        private List<String> friends { get; set; }
+
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            objectManagerService = new ManagerService();
+            friends = new List<String>();
+            objectPlayer = new PlayerServer();
+            objectFriend = new FriendServer();
+
+            objectPlayer.idPlayer = 1;
+            objectPlayer.firstName = "Cristopher";
+            objectPlayer.lastName = "Rodriguez Salamanca";
+            objectPlayer.email = "cris@gmail.com";
+            objectPlayer.userName = "Cris";
+            objectPlayer.password = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
+            objectPlayer.status = true;
+
+            objectFriend.idFriend = 1;
+            objectFriend.gameFriend = 4;
+            objectFriend.creationDate = DateTime.Now;
+            objectFriend.ownerPlayer = 1;
+        }
 
 
         [TestMethod]
-        public void MatchingFriendsSuccess()
+        public void TestMatchingFriendsSuccess()
         {
-            ManagerService objectManagerService = new ManagerService();
+            Assert.IsNotNull(objectManagerService.MatchingFriends(objectPlayer.userName));
+        }        
 
-            var obtainedResult = objectManagerService.MatchingFriends(username);
-
-            Assert.IsNotNull(obtainedResult);
+        [TestMethod]
+        public void TestMatchingFriendsUserWithoutFriends()
+        {
+            Assert.IsNull(objectManagerService.MatchingFriends("Rosa"));
         }
 
         [TestMethod]
-        public void MatchingFriendsFailed()
+        public void TestMatchingFriendsWithSpecialCharacters()
         {
-            ManagerService objectManagerService = new ManagerService();
-
-            var obtainedResult = objectManagerService.MatchingFriends("Pedrito");
-
-            Assert.IsNull(obtainedResult);
+            Assert.IsNull(objectManagerService.MatchingFriends("4%#"));
         }
 
         [TestMethod]
-        public void AddFriendSuccess()
+        public void TestAddFriendSuccess()
         {
-            FriendServer friend = new FriendServer();
-            friend.gameFriend = 1;
-            friend.ownerPlayer = 2;
-            friend.creationDate = System.DateTime.Now;
-
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.AddFriend(friend);
-
-            Assert.Equals(1, obtainedResult);
+            Assert.AreEqual(1, objectManagerService.AddFriend(objectFriend));
         }
 
         [TestMethod]
-        public void AddFriendFailed()
+        public void TestAddFriendFailed()
         {
-            FriendServer friend = new FriendServer();
-            friend.gameFriend = 80;
-            friend.ownerPlayer = 80;
-            friend.creationDate = System.DateTime.Now;
-
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.AddFriend(friend);
-
-            Assert.Equals(0, obtainedResult);
+            FriendServer objectFriendNew = new FriendServer();
+            objectFriendNew.idFriend = 30;
+            objectFriendNew.gameFriend = 40;
+            objectFriendNew.creationDate = DateTime.Now;
+            objectFriendNew.ownerPlayer = 12;
+            Assert.AreEqual(0, objectManagerService.AddFriend(objectFriendNew));
         }
 
         [TestMethod]
-        public void AddPlayerSuccess()
+        public void TestAddFriendWithoutConnection()
+        {
+            Assert.AreEqual(404, objectManagerService.AddFriend(objectFriend));
+        }
+
+        [TestMethod]
+        public void TestAddPlayerSuccess()
+        {
+            PlayerServer objectPlayerNew = new PlayerServer();
+            objectPlayer.idPlayer = 9;
+            objectPlayer.firstName = "Heisenberg";
+            objectPlayer.lastName = "Medio Metro";
+            objectPlayer.email = "hme@gmail.com";
+            objectPlayer.userName = "Destrozador";
+            objectPlayer.password = "8d969ee9etcad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
+            objectPlayer.status = true;
+
+            Assert.AreEqual(1, objectManagerService.AddPlayer(objectPlayerNew));
+        }
+
+        [TestMethod]
+        public void TestAddPlayerFailed()
+        {
+            Assert.AreEqual(0, objectManagerService.AddPlayer(objectPlayer));
+        }
+
+        [TestMethod]
+        public void TestAddPlayerWithoutConnection()
+        {
+            Assert.AreEqual(404, objectManagerService.AddPlayer(objectPlayer));
+        }
+
+        [TestMethod]
+        public void TestDeleteFriendSuccess()
+        {
+            Assert.AreEqual(1, objectManagerService.DeleteFriend(objectFriend.ownerPlayer, objectPlayer.userName));
+        }
+
+        [TestMethod]
+        public void TestDeleteFriendFailed()
+        {
+            Assert.AreEqual(0, objectManagerService.DeleteFriend(objectFriend.ownerPlayer, "Bad_Bunny"));
+        }
+
+        [TestMethod]
+        public void TestDeleteFriendWithoutConnection()
+        {
+            Assert.AreEqual(404, objectManagerService.DeleteFriend(objectFriend.ownerPlayer, objectPlayer.userName));
+        }
+
+        [TestMethod]
+        public void TestSearchPlayerSuccess()
+        {
+            objectManagerService.SearchPlayer(objectPlayer.userName);
+            Assert.AreEqual(objectPlayer.userName, objectManagerService.SearchPlayer(objectPlayer.userName).userName);
+        }
+
+        [TestMethod]
+        public void TestSearchPlayerFailed()
+        {
+            Assert.AreNotEqual(objectPlayer, objectManagerService.SearchPlayer("Dircio"));
+        }
+
+        [TestMethod]
+        public void TestSearchPlayerWithoutConnection()
+        {
+            Assert.IsNull(objectManagerService.SearchPlayer("Memo_8a"));
+        }
+
+        [TestMethod]
+        public void TestUpdatePlayerSuccess()
+        {
+            objectPlayer.lastName = "Rodriguez Pereira";
+
+            Assert.AreEqual(1, objectManagerService.UpdatePlayer(objectPlayer));
+        }
+
+        [TestMethod]
+        public void TestUpdatePlayerUnregistered()
         {
             PlayerServer playerServer = new PlayerServer();
-            playerServer.idPlayer = 1;
-            playerServer.firstName = "Cristopher";
-            playerServer.lastName = "Rodríguez Salamanca";
-            playerServer.email = "cris@gmail.com";
-            playerServer.userName = username;
-            playerServer.password = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
-            playerServer.status = true;
+            playerServer.firstName = "Chicharito";
+            playerServer.lastName = "Perez Mendez";
+            playerServer.userName = "ChichaGod";
+            playerServer.password = "8d969eef8q7t8ec29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
 
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.AddPlayer(playerServer);
-
-            Assert.Equals(1, obtainedResult);
+            Assert.Equals(0, objectManagerService.UpdatePlayer(playerServer));
         }
 
         [TestMethod]
-        public void AddPlayerFailed()
+        public void TestUpdatePlayerWithoutConnection()
         {
-            PlayerServer playerServer = new PlayerServer();
-            playerServer.idPlayer = 1;
-            playerServer.firstName = "Pedrito";
-            playerServer.lastName = "Sola";
-            playerServer.email = "peso@gmail.com";
-            playerServer.userName = "PedritoGamer";
-            playerServer.password = "8d4544d4sdcad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
-            playerServer.status = true;
-
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.AddPlayer(playerServer);
-
-            Assert.Equals(0, obtainedResult);
+            Assert.Equals(404, objectManagerService.UpdatePlayer(objectPlayer));
         }
 
-
-
         [TestMethod]
-        public void SearchPlayerSuccess()
+        public void TestValidateEmailPlayerSuccess()
         {
-            ManagerService objectManagerService = new ManagerService();
-            var obtainedResult = objectManagerService.SearchPlayer(username);
-
-            Assert.IsNotNull(obtainedResult);
+            Assert.Equals(1, objectManagerService.ValidateEmailPlayer(objectPlayer));
         }
 
         [TestMethod]
-        public void SearchPlayerFailed()
-        {
-            ManagerService objectManagerService = new ManagerService();
-            var obtainedResult = objectManagerService.SearchPlayer("Pedrito");
-
-            Assert.IsNull(obtainedResult);
-        }
-
-        [TestMethod]
-        public void UpdatePlayerSuccess()
-        {
-            PlayerServer playerServer = new PlayerServer();
-            playerServer.firstName = "Cristopher";
-            playerServer.lastName = "Rodríguez Salamanca";
-            playerServer.userName = username;
-            playerServer.password = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
-
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.UpdatePlayer(playerServer);
-
-            Assert.Equals(1, obtainedResult);
-        }
-
-        [TestMethod]
-        public void UpdatePlayerFailed()
-        {
-            PlayerServer playerServer = new PlayerServer();
-            playerServer.firstName = "Cristopher";
-            playerServer.lastName = "Rodríguez Salamanca";
-            playerServer.userName = "PedritoGamer";
-            playerServer.password = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
-
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.UpdatePlayer(playerServer);
-
-            Assert.Equals(0, obtainedResult);
-        }
-
-        [TestMethod]
-        public void ValidateEmailPlayerSuccess()
-        {
-            PlayerServer playerServer = new PlayerServer();
-            playerServer.email = "cris@gmail.com";
-
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.ValidateEmailPlayer(playerServer);
-
-            Assert.Equals(1, obtainedResult);
-        }
-
-        [TestMethod]
-        public void ValidateEmailPlayerFailed()
+        public void TestValidateEmailPlayerFailed()
         {
             PlayerServer playerServer = new PlayerServer();
             playerServer.email = "crisoforogamer@gmail.com";
 
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.ValidateEmailPlayer(playerServer);
-
-            Assert.Equals(0, obtainedResult);
+            Assert.Equals(0, objectManagerService.ValidateEmailPlayer(playerServer));
         }
 
         [TestMethod]
-        public void UserConnectSuccess()
+        public void TestValidateEmailPlayerWithoutConnection()
         {
-            PlayerServer playerServer = new PlayerServer();
-            playerServer.userName = username;
-            playerServer.password = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
-
-            ManagerService objectManagerService = new ManagerService();
-            var obtainedResult = objectManagerService.UserConnect(playerServer);
-
-            Assert.IsNotNull(obtainedResult);
+            Assert.Equals(404, objectManagerService.ValidateEmailPlayer(objectPlayer));
         }
 
         [TestMethod]
-        public void UserConnectFailed()
+        public void TestUserConnectSuccess()
+        {
+            Assert.AreEqual(objectPlayer, objectManagerService.UserConnect(objectPlayer));
+        }
+
+        [TestMethod]
+        public void TestUserConnectFailed()
         {
             PlayerServer playerServer = new PlayerServer();
             playerServer.userName = "Pedrito";
             playerServer.password = "8d969eef64a7q8c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
 
-            ManagerService objectManagerService = new ManagerService();
-            var obtainedResult = objectManagerService.UserConnect(playerServer);
-
-            Assert.IsNull(obtainedResult);
+            Assert.AreNotEqual(objectPlayer, objectManagerService.UserConnect(playerServer));
         }
 
         [TestMethod]
-        public void ValidateUserNamePlayerSuccess()
+        public void TestUserConnectWithoutConnection()
         {
-            PlayerServer playerServer = new PlayerServer();
-            playerServer.userName = username;
-
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.ValidateUserNamePlayer(playerServer);
-
-            Assert.Equals(1, obtainedResult);
+            Assert.IsNull(objectManagerService.UserConnect(objectPlayer));
         }
 
         [TestMethod]
-        public void ValidateUserNamePlayerFailed()
+        public void TestValidateUserNamePlayerSuccess()
+        {
+            Assert.AreEqual(1, objectManagerService.ValidateUserNamePlayer(objectPlayer));
+        }
+
+        [TestMethod]
+        public void TestValidateUserNamePlayerFailed()
         {
             PlayerServer playerServer = new PlayerServer();
             playerServer.userName = "PedritoGamer";
 
-            ManagerService objectManagerService = new ManagerService();
-            int obtainedResult = objectManagerService.ValidateUserNamePlayer(playerServer);
+            Assert.AreEqual(0, objectManagerService.ValidateUserNamePlayer(playerServer));
+        }
 
-            Assert.Equals(0, obtainedResult);
+        [TestMethod]
+        public void TestValidateUserNamePlayerWithoutConnection()
+        {
+            Assert.AreEqual(404, objectManagerService.ValidateUserNamePlayer(objectPlayer));
         }
 
     }

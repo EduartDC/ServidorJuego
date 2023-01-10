@@ -587,6 +587,7 @@ namespace MessageService
                     if (lobby.Equals(code))
                     {
                         lobbys.Remove(code);
+                        break;
                     }
                 }
             }
