@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace TestUnitApp
 {
-    internal class MatchServiceTest
+    [TestClass]
+    public class MatchServiceTest
     {
-        string code = "123456";
 
         
 

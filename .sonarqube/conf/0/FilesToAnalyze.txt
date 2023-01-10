@@ -1,10 +1,10 @@
-﻿C:\Users\Eduar\Desktop\New folder\MessageService\DataAcces\Answer.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\DataAcces\Class1.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\DataAcces\DataContext.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\DataAcces\Friend.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\DataAcces\Match.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\DataAcces\Player.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\DataAcces\Properties\AssemblyInfo.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\DataAcces\Question.cs
-C:\Users\Eduar\Desktop\New folder\MessageService\DataAcces\App.config
-C:\Users\Eduar\Desktop\New folder\MessageService\DataAcces\packages.config
+﻿C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\DataAcces\Answer.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\DataAcces\Class1.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\DataAcces\DataContext.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\DataAcces\Friend.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\DataAcces\Match.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\DataAcces\Player.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\DataAcces\Properties\AssemblyInfo.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\DataAcces\Question.cs
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\DataAcces\App.config
+C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\DataAcces\packages.config
