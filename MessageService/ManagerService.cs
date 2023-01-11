@@ -635,7 +635,7 @@ namespace MessageService
                 {
                     if (players.userName.Equals(username))
                     {
-                        list.Remove(players);
+                        lobbys[code].Remove(players);
                         break;
                     }
 

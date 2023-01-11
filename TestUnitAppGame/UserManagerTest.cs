@@ -43,7 +43,7 @@ namespace TestUnitApp
         public void TestMatchingFriendsSuccess()
         {
             Assert.IsNotNull(objectManagerService.MatchingFriends(objectPlayer.userName));
-        }        
+        }
 
         [TestMethod]
         public void TestMatchingFriendsUserWithoutFriends()
