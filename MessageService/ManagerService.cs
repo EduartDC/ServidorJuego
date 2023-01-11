@@ -11,6 +11,9 @@ using System.Runtime.Remoting.Contexts;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
+using System.Configuration;
+using System.Net;
+using System.ServiceModel.Channels;
 
 namespace MessageService
 {
@@ -125,7 +128,7 @@ namespace MessageService
 
                     foreach (var players in validatePlayers)
                     {
-                        if (player.userName.Equals(player.userName))
+                        if (players.userName.Equals(player.userName))
                         {
                             validate = true;
                         }
@@ -223,8 +226,6 @@ namespace MessageService
                         player.password = players.password;
                         player.status = players.status;
                     }
-
-
                 }
                 else
                 {
@@ -245,6 +246,7 @@ namespace MessageService
                     var lastName = newPlayer.lastName;
                     var userName = newPlayer.userName;
                     var password = newPlayer.password;
+                    var status = newPlayer.status;
 
                     var player = connection.Players.Find(newPlayer.idPlayer);
 
@@ -252,6 +254,7 @@ namespace MessageService
                     player.lastName = lastName;
                     player.userName = userName;
                     player.password = password;
+                    player.status = status;
 
                     result = connection.SaveChanges();
 
@@ -460,6 +463,39 @@ namespace MessageService
                 return player;
             }
 
+        }
+
+        public int SendMail(PlayerServer player, string code)
+        {
+            string smtpServer = ConfigurationManager.AppSettings["SMTP_SERVER"];
+            int port = int.Parse(ConfigurationManager.AppSettings["PORT"]);
+            string emailAddress = ConfigurationManager.AppSettings["EMAIL_ADDRESS"];
+            string password = ConfigurationManager.AppSettings["PASSWORD"];
+            string playerEmail = player.email;
+            var result = 0;
+
+            try
+            {
+                var mailMessage = new MailMessage(emailAddress, playerEmail, "Verificacion de correo en 100 Mexicanos Dijeron", ("Codigo de verificacion" + " " + code + "."))
+                {
+                    IsBodyHtml = true
+                };
+                var smtpClient = new SmtpClient(smtpServer)
+                {
+                    Port = port,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(emailAddress, password),
+                    EnableSsl = true,
+                };
+                smtpClient.Send(mailMessage);
+                result = 1;
+            }
+            catch (SmtpException)
+            {
+                result = errorConnection;
+            }
+
+            return result;
         }
     }
 
@@ -754,7 +790,7 @@ namespace MessageService
             }
         }
 
-        public void StartRaund(MatchServer match)
+        public void StartRound(MatchServer match)
         {
             QuestionServer questionServer = new QuestionServer();
             List<AnswerServer> answers = new List<AnswerServer>();

@@ -48,6 +48,11 @@ namespace MessageService
 
         [OperationContract]
         PlayerServer GuestUser();
+
+        [OperationContract]
+        int SendMail(PlayerServer player, string code);
+
+
     }
 
 

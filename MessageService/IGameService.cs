@@ -14,7 +14,7 @@ namespace MessageService
     {
 
         [OperationContract(IsOneWay = true)]
-        void StartRaund(MatchServer match);
+        void StartRound(MatchServer match);
 
         [OperationContract(IsOneWay = true)]
         void SetCallbackGame(string username);
