@@ -26,6 +26,8 @@ namespace MessageService
     {
         List<PlayerServer> usersOnline = new List<PlayerServer>();
         int errorConnection = 404;
+        int invalid = 0;
+        int valid = 1;
 
         public bool VerifyConnection()
         {
@@ -83,7 +85,7 @@ namespace MessageService
 
         public int AddFriend(FriendServer newFriend)
         {
-            var result = 0;
+            var result = invalid;
             using (var connection = new DataContext())
             {
                 if (VerifyConnection())
@@ -116,7 +118,7 @@ namespace MessageService
 
         public int AddPlayer(PlayerServer player)
         {
-            var result = 0;
+            var result = invalid;
             var validate = false;
             using (var connection = new DataContext())
             {
@@ -165,7 +167,7 @@ namespace MessageService
         {
             using (var connection = new DataContext())
             {
-                var result = 0;
+                var result = invalid;
                 if (VerifyConnection())
                 {
 
@@ -237,7 +239,7 @@ namespace MessageService
         }
         public int UpdatePlayer(PlayerServer newPlayer)
         {
-            var result = 0;
+            var result = invalid;
             using (var connection = new DataContext())
             {
                 if (VerifyConnection())
@@ -269,7 +271,7 @@ namespace MessageService
 
         public int ValidateEmailPlayer(PlayerServer player)
         {
-            var result = 0;
+            var result = invalid;
             using (var connection = new DataContext())
             {
                 if (VerifyConnection())
@@ -280,7 +282,7 @@ namespace MessageService
 
                     if (playerList != null)
                     {
-                        result = 1;
+                        result = valid;
 
                     }
 
@@ -346,7 +348,7 @@ namespace MessageService
 
         public int ValidateUserNamePlayer(PlayerServer player)
         {
-            var result = 0;
+            var result = invalid;
             using (var connection = new DataContext())
             {
                 if (VerifyConnection())
@@ -357,7 +359,7 @@ namespace MessageService
 
                     if (playerList != null)
                     {
-                        result = 1;
+                        result = valid;
 
                     }
 
@@ -417,12 +419,12 @@ namespace MessageService
 
         public int ValidateLobby(string code)
         {
-            var result = 0;
+            var result = invalid;
             foreach (var lobby in lobbys.Keys)
             {
                 if (lobby.Equals(code))
                 {
-                    result = 1;
+                    result = valid;
                 }
 
             }
@@ -472,7 +474,7 @@ namespace MessageService
             string emailAddress = ConfigurationManager.AppSettings["EMAIL_ADDRESS"];
             string password = ConfigurationManager.AppSettings["PASSWORD"];
             string playerEmail = player.email;
-            var result = 0;
+            var result = invalid;
 
             try
             {
@@ -488,7 +490,7 @@ namespace MessageService
                     EnableSsl = true,
                 };
                 smtpClient.Send(mailMessage);
-                result = 1;
+                result = valid;
             }
             catch (SmtpException)
             {
