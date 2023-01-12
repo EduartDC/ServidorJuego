@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System;
 using DataAcces;
+using System.Linq;
 
 namespace TestUnitApp
 {
@@ -11,6 +12,7 @@ namespace TestUnitApp
     public class UserManagerTest
     {
         private PlayerServer objectPlayer { get; set; }
+        private PlayerServer objectPlayerFriend { get; set; }
         private FriendServer objectFriend { get; set; }
         private ManagerService objectManagerService { get; set; }
         private List<String> friends { get; set; }
@@ -22,6 +24,7 @@ namespace TestUnitApp
             objectManagerService = new ManagerService();
             friends = new List<String>();
             objectPlayer = new PlayerServer();
+            objectPlayerFriend = new PlayerServer();
             objectFriend = new FriendServer();
 
             objectPlayer.idPlayer = 1;
@@ -31,6 +34,14 @@ namespace TestUnitApp
             objectPlayer.userName = "Cris";
             objectPlayer.password = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
             objectPlayer.status = true;
+
+            objectPlayerFriend.idPlayer = 4;
+            objectPlayerFriend.firstName = "Eduardo";
+            objectPlayerFriend.lastName = "Lopez Chacon";
+            objectPlayerFriend.email = "edu@gmail.com";
+            objectPlayerFriend.userName = "Edu";
+            objectPlayerFriend.password = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
+            objectPlayerFriend.status = true;
 
             objectFriend.idFriend = 1;
             objectFriend.gameFriend = 4;
@@ -42,19 +53,28 @@ namespace TestUnitApp
         [TestMethod]
         public void TestMatchingFriendsSuccess()
         {
-            Assert.IsNotNull(objectManagerService.MatchingFriends(objectPlayer.userName));
+            objectManagerService.UserConnect(objectPlayerFriend);
+            Assert.AreEqual(1, objectManagerService.MatchingFriends(objectPlayer.userName).Count());
         }
 
         [TestMethod]
         public void TestMatchingFriendsUserWithoutFriends()
         {
-            Assert.IsNull(objectManagerService.MatchingFriends("Rosa"));
+            Assert.AreEqual(0, objectManagerService.MatchingFriends("Rosa").Count());
         }
 
         [TestMethod]
-        public void TestMatchingFriendsWithSpecialCharacters()
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void TestMatchingFriendsFailedWithSpecialCharacters()
         {
-            Assert.IsNull(objectManagerService.MatchingFriends("4%#"));
+            Assert.AreEqual(0, objectManagerService.MatchingFriends("#$&").Count());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void TestMatchingFriendsFailedWithBlankSpace()
+        {
+            Assert.AreEqual(0, objectManagerService.MatchingFriends(" ").Count());
         }
 
         [TestMethod]
@@ -64,14 +84,10 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void TestAddFriendFailed()
-        {
-            FriendServer objectFriendNew = new FriendServer();
-            objectFriendNew.idFriend = 30;
-            objectFriendNew.gameFriend = 40;
-            objectFriendNew.creationDate = DateTime.Now;
-            objectFriendNew.ownerPlayer = 12;
-            Assert.AreEqual(0, objectManagerService.AddFriend(objectFriendNew));
+        [ExpectedException(typeof(NullReferenceException))]
+        public void TestAddFriendFailedWithNullFriend()
+        {            
+            Assert.AreEqual(0, objectManagerService.AddFriend(null));
         }
 
         [TestMethod]
@@ -84,19 +100,18 @@ namespace TestUnitApp
         public void TestAddPlayerSuccess()
         {
             PlayerServer objectPlayerNew = new PlayerServer();
-            objectPlayer.idPlayer = 9;
-            objectPlayer.firstName = "Heisenberg";
-            objectPlayer.lastName = "Medio Metro";
-            objectPlayer.email = "hme@gmail.com";
-            objectPlayer.userName = "Destrozador";
-            objectPlayer.password = "8d969ee9etcad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
-            objectPlayer.status = true;
+            objectPlayerNew.firstName = "Jorge Octavio";
+            objectPlayerNew.lastName = "Ocharan Hernández";
+            objectPlayerNew.email = "johe@gmail.com";
+            objectPlayerNew.userName = "Architect";
+            objectPlayerNew.password = "cda8b4c76cbf032571dd2b6f9545dd5d100153f92d11d9720a30ed9d24b55fdf";
+            objectPlayerNew.status = false;
 
             Assert.AreEqual(1, objectManagerService.AddPlayer(objectPlayerNew));
         }
 
         [TestMethod]
-        public void TestAddPlayerFailed()
+        public void TestAddPlayerFailedWithExistingUser()
         {
             Assert.AreEqual(0, objectManagerService.AddPlayer(objectPlayer));
         }
@@ -108,21 +123,65 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void TestDeleteFriendSuccess()
+        [ExpectedException(typeof(NullReferenceException))]
+        public void TestAddPlayerFailedWithNullPlayer()
         {
-            Assert.AreEqual(1, objectManagerService.DeleteFriend(objectFriend.ownerPlayer, objectPlayer.userName));
+            Assert.AreEqual(0, objectManagerService.AddPlayer(null));
         }
 
         [TestMethod]
-        public void TestDeleteFriendFailed()
+        public void TestDeleteFriendSuccess()
         {
-            Assert.AreEqual(0, objectManagerService.DeleteFriend(objectFriend.ownerPlayer, "Bad_Bunny"));
+            objectManagerService.UserConnect(objectPlayerFriend);
+            Assert.AreEqual(1, objectManagerService.DeleteFriend(objectPlayer.idPlayer, objectPlayerFriend.userName));
+        }
+
+        [TestMethod]
+        public void TestDeleteFriendFriendOffline()
+        {
+            Assert.AreEqual(0, objectManagerService.DeleteFriend(objectPlayer.idPlayer, objectPlayerFriend.userName));            
+        }
+
+        [TestMethod]
+        public void TestDeleteFriendNonExistentFriend()
+        {            
+            Assert.AreEqual(0, objectManagerService.DeleteFriend(objectPlayer.idPlayer, "Bad_Bunny"));
         }
 
         [TestMethod]
         public void TestDeleteFriendWithoutConnection()
         {
             Assert.AreEqual(404, objectManagerService.DeleteFriend(objectFriend.ownerPlayer, objectPlayer.userName));
+        }
+
+        [TestMethod]
+        public void TestDeleteFriendWithWrongArgument()
+        {
+            Assert.AreEqual(0, objectManagerService.DeleteFriend(666, objectPlayerFriend.userName));
+        }
+
+        [TestMethod]
+        public void TestDeleteFriendWithWrongUsername()
+        {
+            Assert.AreEqual(0, objectManagerService.DeleteFriend(objectPlayer.idPlayer, "Popó"));
+        }
+
+        [TestMethod]
+        public void TestDeleteFriendWithInvalidCharacters()
+        {
+            Assert.AreEqual(0, objectManagerService.DeleteFriend(objectPlayer.idPlayer, "#+-!"));
+        }
+
+        [TestMethod]
+        public void TestDeleteFriendWithInvalidCharacterOnID()
+        {
+            Assert.AreEqual(0, objectManagerService.DeleteFriend(-1, objectPlayerFriend.userName));
+        }
+
+        [TestMethod]
+        public void TestDeleteFriendWithBlankSpace()
+        {
+            Assert.AreEqual(0, objectManagerService.DeleteFriend(objectPlayer.idPlayer, " "));
         }
 
         [TestMethod]
@@ -133,9 +192,10 @@ namespace TestUnitApp
         }
 
         [TestMethod]
-        public void TestSearchPlayerFailed()
+        [ExpectedException(typeof(NullReferenceException))]
+        public void TestSearchPlayerFailedWithUnregisteredPlayer()
         {
-            Assert.AreNotEqual(objectPlayer, objectManagerService.SearchPlayer("Dircio"));
+            Assert.AreNotEqual("Gaviota", objectManagerService.SearchPlayer("Gaviota").userName);
         }
 
         [TestMethod]
@@ -145,10 +205,23 @@ namespace TestUnitApp
         }
 
         [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void TestSearchPlayerFailedWithBlankSpace()
+        {
+            Assert.AreNotEqual(objectPlayer.userName, objectManagerService.SearchPlayer(" ").userName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void TestSearchPlayerFailedWithInvalidCharacters()
+        {
+            Assert.AreNotEqual(objectPlayer.userName, objectManagerService.SearchPlayer("#!-¿").userName);
+        }
+
+        [TestMethod]
         public void TestUpdatePlayerSuccess()
         {
-            objectPlayer.lastName = "Rodriguez Pereira";
-
+            objectPlayer.email = "crisoforo@gmail.com";
             Assert.AreEqual(1, objectManagerService.UpdatePlayer(objectPlayer));
         }
 
