@@ -7,27 +7,31 @@ namespace TestUnitApp
     [TestClass]
     public class ChatServiceTest
     {
+        private ManagerService objectManagerService { get; set; }
         String username = "Cris";
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            objectManagerService = new ManagerService();
+        }            
 
         [TestMethod]
         public void TestSearchPlayersInChatWithoutUsers()
-        {
-
-            ManagerService objectManagerService = new ManagerService();
-
-            var obtainedResult = objectManagerService.SearchPlayersInChat(username);
-
-            Assert.IsTrue(obtainedResult);
+        {                        
+            Assert.IsFalse(objectManagerService.SearchPlayersInChat(username));
         }
 
         [TestMethod]
-        public void TestSearchPlayersInChatFailed()
+        public void TestSearchPlayersWithBlankSpace()
+        {            
+            Assert.IsFalse(objectManagerService.SearchPlayersInChat(" "));
+        }
+
+        [TestMethod]
+        public void TestSearchPlayersWithNullInput()
         {
-            ManagerService objectManagerService = new ManagerService();
-
-            var obtainedResult = objectManagerService.SearchPlayersInChat("Pedrito");
-
-            Assert.IsFalse(obtainedResult);
+            Assert.IsFalse(objectManagerService.SearchPlayersInChat(null));
         }
 
     }
