@@ -46,6 +46,7 @@ namespace MessageService
             }
             return result;
         }
+
         public List<PlayerServer> MatchingFriends(string username)
         {
             using (var connection = new DataContext())
@@ -59,7 +60,6 @@ namespace MessageService
                     var listFriends = (from user in connection.Friends
                                        where user.ownerPlayer.Equals(player.idPlayer)
                                        select user).ToList();
-
                     foreach (var friendServer in listFriends)
                     {
                         foreach (var playerOnline in usersOnline)
@@ -69,17 +69,13 @@ namespace MessageService
                                 friends.Add(playerOnline);
                             }
                         }
-
                     }
-
-
                 }
                 else
                 {
                     friends = null;
                 }
                 return friends;
-
             }
         }
 
