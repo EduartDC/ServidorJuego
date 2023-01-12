@@ -641,9 +641,11 @@ namespace MessageService
 
                 }
 
-                foreach (var players in list)
+                var newList = lobbys[code].ToList();
+                foreach (var players in newList)
                 {
-                    players.matchCallBack.UpdateLobby(list);
+
+                    players.matchCallBack.UpdateLobby(newList);
                 }
             }
 
