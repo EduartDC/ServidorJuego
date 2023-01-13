@@ -584,26 +584,27 @@ namespace MessageService
                 if (players.userName.Equals(player))
                 {
                     newPlayer = players;
+                    break;
                 }
-
-                if (newPlayer != null)
+            }
+            if (newPlayer != null)
+            {
+                newPlayer.chatCallback.ReceiveWhisper(message);
+            }
+            else
+            {
+                foreach (var playersIn in playersInChat)
                 {
-                    newPlayer.chatCallback.ReceiveWhisper(message);
-                }
-                else
-                {
-                    foreach (var playersIn in playersInChat)
+                    if (playersIn.userName.Equals(message.Sender))
                     {
-                        if (playersIn.userName.Equals(message.Sender))
-                        {
-                            MessageServer messageServer = new MessageServer();
-                            messageServer.Sender = "Sytem";
-                            messageServer.Content = "User not foud";
-                            playersIn.chatCallback.ReceiveWhisper(messageServer);
-                        }
+                        MessageServer messageServer = new MessageServer();
+                        messageServer.Sender = "Sytem";
+                        messageServer.Content = "User not foud";
+                        playersIn.chatCallback.ReceiveWhisper(messageServer);
                     }
                 }
             }
+
         }
     }
 
