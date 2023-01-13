@@ -47,7 +47,7 @@ namespace MessageService
             return result;
         }
 
-        public List<PlayerServer> MatchingFriends(string username)
+        public List<PlayerServer> MatchingFriends(string userName)
         {
             using (var connection = new DataContext())
             {
@@ -55,7 +55,7 @@ namespace MessageService
                 if (VerifyConnection())
                 {
                     var player = (from user in connection.Players
-                                  where user.userName.Equals(username)
+                                  where user.userName.Equals(userName)
                                   select user).First();
                     var listFriends = (from user in connection.Friends
                                        where user.ownerPlayer.Equals(player.idPlayer)
@@ -120,7 +120,7 @@ namespace MessageService
             {
                 if (VerifyConnection())
                 {
-                    var validatePlayers = new List<Player>();
+                    List<Player> validatePlayers = new List<Player>();
 
                     validatePlayers = connection.Players.ToList();
 
@@ -159,7 +159,7 @@ namespace MessageService
 
         }
 
-        public int DeleteFriend(int idPlayer, string username)
+        public int DeleteFriend(int idPlayer, string userName)
         {
             using (var connection = new DataContext())
             {
@@ -170,7 +170,7 @@ namespace MessageService
                     PlayerServer player = new PlayerServer();
                     foreach (var players in usersOnline)
                     {
-                        if (players.userName.Equals(username))
+                        if (players.userName.Equals(userName))
                         {
                             player = players;
                             break;
@@ -214,7 +214,7 @@ namespace MessageService
                                    where user.userName.Equals(userName)
                                    select user).FirstOrDefault();
 
-                    if (players.userName != null)
+                    if (players != null)
                     {
                         player.idPlayer = players.idPlayer;
                         player.firstName = players.firstName;
@@ -370,12 +370,12 @@ namespace MessageService
             return result;
         }
 
-        public void SetCallBack(string username)
+        public void SetCallBack(string userName)
         {
 
             foreach (var players in usersOnline)
             {
-                if (players.userName.Equals(username))
+                if (players.userName.Equals(userName))
                 {
                     players.userCallBack = OperationContext.Current.GetCallbackChannel<INotificationServiceCallback>();
 
@@ -399,11 +399,11 @@ namespace MessageService
 
         }
 
-        public void UserDisconect(string username)
+        public void UserDisconect(string userName)
         {
             foreach (var player in usersOnline)
             {
-                if (player.userName.Equals(username))
+                if (player.userName.Equals(userName))
                 {
                     usersOnline.Remove(player);
                     break;
@@ -611,7 +611,7 @@ namespace MessageService
     {
         Dictionary<string, List<PlayerServer>> lobbys = new Dictionary<string, List<PlayerServer>>();
 
-        public void DisconnectFromLobby(string username, string code)
+        public void DisconnectFromLobby(string userName, string code)
         {
             var list = lobbys[code].ToList();
             if (list.Count == 1)
@@ -629,7 +629,7 @@ namespace MessageService
             {
                 foreach (var players in list)
                 {
-                    if (players.userName.Equals(username))
+                    if (players.userName.Equals(userName))
                     {
                         lobbys[code].Remove(players);
                         break;
@@ -646,10 +646,11 @@ namespace MessageService
             }
 
         }
-
-        public void StartLobby(string username, string code)
+        bool ValidateExistLobby(string code)
         {
             var result = false;
+
+
             foreach (var codeInvitation in lobbys.Keys)
             {
                 if (codeInvitation.Equals(code))
@@ -657,13 +658,18 @@ namespace MessageService
                     result = true;
                 }
             }
+            return result;
+        }
+        public void StartLobby(string userName, string code)
+        {
+            var result = ValidateExistLobby(code);
 
             if (!result)
             {
                 PlayerServer playerServer = new PlayerServer();
                 foreach (var player in usersOnline)
                 {
-                    if (player.userName.Equals(username))
+                    if (player.userName.Equals(userName))
                     {
 
                         playerServer = player;
@@ -693,11 +699,16 @@ namespace MessageService
                 }
 
             }
-            if (username.Equals("Guest"))
+            PlayerGuest(userName, code);
+        }
+
+        void PlayerGuest(string userName, string code)
+        {
+            if (userName.Equals("Guest"))
             {
                 foreach (var player in usersOnline)
                 {
-                    if (player.userName.Equals(username))
+                    if (player.userName.Equals(userName))
                     {
                         lobbys[code].Add(player);
                     }
@@ -708,13 +719,12 @@ namespace MessageService
                 }
             }
         }
-
-        public void AddToLobby(string username, string code)
+        public void AddToLobby(string userName, string code)
         {
             PlayerServer playerServer = new PlayerServer();
             foreach (var players in usersOnline)
             {
-                if (players.userName.Equals(username))
+                if (players.userName.Equals(userName))
                 {
 
                     playerServer = players;
@@ -730,11 +740,11 @@ namespace MessageService
 
         }
 
-        public void SetCallbackMatch(string username)
+        public void SetCallbackMatch(string userName)
         {
             foreach (var players in usersOnline)
             {
-                if (players.userName.Equals(username))
+                if (players.userName.Equals(userName))
                 {
                     players.matchCallBack = OperationContext.Current.GetCallbackChannel<IMatchServiceCallBack>();
 
@@ -835,11 +845,11 @@ namespace MessageService
 
         }
 
-        public void SetCallbackGame(string username)
+        public void SetCallbackGame(string userName)
         {
             foreach (var players in usersOnline)
             {
-                if (players.userName.Equals(username))
+                if (players.userName.Equals(userName))
                 {
                     players.gameCallback = OperationContext.Current.GetCallbackChannel<IGameServiceCallback>();
 
@@ -847,7 +857,7 @@ namespace MessageService
             }
         }
 
-        public void YouTurn(string username, string code)
+        public void YouTurn(string userName, string code)
         {
 
             var list = lobbys[code].ToList();
@@ -856,7 +866,7 @@ namespace MessageService
 
             foreach (var players in list)
             {
-                if (players.userName.Equals(username))
+                if (players.userName.Equals(userName))
                 {
                     turnOn = players;
                 }
@@ -925,14 +935,14 @@ namespace MessageService
             }
         }
 
-        public void KickFromLobby(string username, string code)
+        public void KickFromLobby(string userName, string code)
         {
             var list = lobbys[code].ToList();
             if (list.Count >= 2)
             {
                 foreach (var player in list)
                 {
-                    if (!player.userName.Equals(username))
+                    if (!player.userName.Equals(userName))
                     {
                         lobbys[code].Remove(player);
                         player.matchCallBack.Kicked();

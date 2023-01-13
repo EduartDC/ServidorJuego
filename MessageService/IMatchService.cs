@@ -16,22 +16,22 @@ namespace MessageService
     internal interface IMatchService
     {
         [OperationContract(IsOneWay = true)]
-        void StartLobby(string username, string code);
+        void StartLobby(string userName, string code);
 
         [OperationContract(IsOneWay = true)]
-        void AddToLobby(string username, string code);
+        void AddToLobby(string userName, string code);
 
         [OperationContract(IsOneWay = true)]
         void StartMatch(string code);
 
         [OperationContract(IsOneWay = true)]
-        void DisconnectFromLobby(string username, string code);
+        void DisconnectFromLobby(string userName, string code);
 
         [OperationContract(IsOneWay = true)]
-        void KickFromLobby(string username, string code);
+        void KickFromLobby(string userName, string code);
 
         [OperationContract(IsOneWay = true)]
-        void SetCallbackMatch(string username);
+        void SetCallbackMatch(string userName);
 
     }
 

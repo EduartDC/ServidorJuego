@@ -1,4 +1,4 @@
-﻿C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\Host\Program.cs
-C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\Host\Properties\AssemblyInfo.cs
-C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\Host\App.config
-C:\Users\crisa\OneDrive - Universidad Veracruzana\UV\AGO-ENE23\TECNOLOGIAS\ProyectoFinal6Ene2022\ServidorA\Host\packages.config
+﻿C:\Users\Eduar\Desktop\New folder\MessageService\Host\Program.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\Host\Properties\AssemblyInfo.cs
+C:\Users\Eduar\Desktop\New folder\MessageService\Host\App.config
+C:\Users\Eduar\Desktop\New folder\MessageService\Host\packages.config

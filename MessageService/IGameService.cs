@@ -17,10 +17,10 @@ namespace MessageService
         void StartRound(MatchServer match);
 
         [OperationContract(IsOneWay = true)]
-        void SetCallbackGame(string username);
+        void SetCallbackGame(string userName);
 
         [OperationContract(IsOneWay = true)]
-        void YouTurn(string username, string code);
+        void YouTurn(string userName, string code);
 
         [OperationContract(IsOneWay = true)]
         void SetBoard(MatchServer matchServer, AnswerServer answerServer);
@@ -42,10 +42,10 @@ namespace MessageService
         void UpdateMatch(MatchServer match, AnswerServer answerServer);
 
         [OperationContract(IsOneWay = true)]
-        void SetTurn(string username);
+        void SetTurn(string userName);
 
         [OperationContract(IsOneWay = true)]
-        void EndTurn(string username);
+        void EndTurn(string userName);
 
         [OperationContract(IsOneWay = true)]
         void ExitMatch(MatchServer match);

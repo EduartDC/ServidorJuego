@@ -12,7 +12,7 @@ namespace MessageService
     interface INotificationService
     {
         [OperationContract]
-        void SetCallBack(String username);
+        void SetCallBack(String userName);
 
         [OperationContract]
         void NotificationUsers(string name, string code);
@@ -23,7 +23,7 @@ namespace MessageService
     {
 
         [OperationContract(IsOneWay = true)]
-        void Notification(string username, string code);
+        void Notification(string userName, string code);
 
         [OperationContract(IsOneWay = true)]
         void LoadLobby(List<PlayerServer> players, string code);
